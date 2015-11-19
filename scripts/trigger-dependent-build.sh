@@ -20,8 +20,7 @@ auth_token=dn57A25LwxDu9Kj_3aaSOg
 # The Travis API endpoint. .com and .org are the commercial and free versions,
 # respectively; enterprise users will have their own hostname.
 #
-echo running trigger dependent build
-
+auth_token=dn57A25LwxDu9Kj_3aaSOg
 body='{
 "request": {
   "branch":"master"
