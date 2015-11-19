@@ -14,22 +14,10 @@
 #   gem install travis
 #   travis login
 #   travis token
-#
-auth_token=dn57A25LwxDu9Kj_3aaSOg
+# dn57A25LwxDu9Kj_3aaSOg
 
 # The Travis API endpoint. .com and .org are the commercial and free versions,
 # respectively; enterprise users will have their own hostname.
 #
-auth_token=dn57A25LwxDu9Kj_3aaSOg
-body='{
-"request": {
-  "branch":"master"
-}}'
 
-curl -s -X POST \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json" \
-  -H "Travis-API-Version: 3" \
-  -H "Authorization: token $auth_token" \
-  -d "$body" \
-  https://api.travis-ci.org/repo/alphagov/notify-functional-tests/requests
+curl -vvv -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token dn57A25LwxDu9Kj_3aaSOg" -d '{"request":{"branch":"master"}}' https://api.travis-ci.org/repo/alphagov%2Fnotify-functional-tests/requests
