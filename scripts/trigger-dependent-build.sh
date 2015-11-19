@@ -20,12 +20,14 @@ auth_token=dn57A25LwxDu9Kj_3aaSOg
 # The Travis API endpoint. .com and .org are the commercial and free versions,
 # respectively; enterprise users will have their own hostname.
 #
+echo running trigger dependent build
+
 body='{
 "request": {
   "branch":"master"
 }}'
 
-curl -S -X POST \
+curl -s -X POST \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -H "Travis-API-Version: 3" \

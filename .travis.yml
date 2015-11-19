@@ -10,18 +10,7 @@ script:
 - ./scripts/run_tests.sh
 
 after_success:
-     - body='{
-            "request": {
-              "branch":"master"
-            }}'
-
-            curl -S -X POST \
-              -H "Content-Type: application/json" \
-              -H "Accept: application/json" \
-              -H "Travis-API-Version: 3" \
-              -H "Authorization: token dn57A25LwxDu9Kj_3aaSOg" \
-              -d "$body" \
-              https://api.travis-ci.org/repo/alphagov/notify-functional-tests/requests
+     - ./scripts/trigger-dependent-build.sh
 
 notifications:
   slack:
