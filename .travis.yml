@@ -9,6 +9,9 @@ install:
 script:
 - ./scripts/run_tests.sh
 
+after_success:
+     - ./scripts/trigger-dependent-build.sh
+
 notifications:
   slack:
     rooms:
