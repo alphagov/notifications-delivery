@@ -31,4 +31,4 @@ curl -s -X POST \
   -H "Travis-API-Version: 3" \
   -H "Authorization: token $auth_token" \
   -d "$body" \
-  https://api.travis-ci.org/repo/alphagov/notifications-functional-tests/requests
+  https://api.travis-ci.org/repo/alphagov/notify-functional-tests/requests
