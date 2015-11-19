@@ -20,67 +20,15 @@ auth_token=dn57A25LwxDu9Kj_3aaSOg
 # The Travis API endpoint. .com and .org are the commercial and free versions,
 # respectively; enterprise users will have their own hostname.
 #
-endpoint=https://api.travis-ci.org
+body='{
+"request": {
+  "branch":"master"
+}}'
 
-# The ID of the tests repo. To find the ID of a repo from its slug `$slug`, run:
-#   curl -H 'Authorization: token dn57A25LwxDu9Kj_3aaSOg' https://api.travis-ci.com/repos/$slug
-#
-repo_id=git@github.com:alphagov/notify-functional-tests.git
-
-# Only run for master builds. Pull request builds have the branch set to master,
-# so ignore those too.
-#
-if [ "${TRAVIS_BRANCH}" != "master" ] || [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-  exit 0
-fi
-
-# Make an API request using the auth token set above. First argument is the path
-# of the API method, all later arguments are passed to curl directly.
-#
-function travis-api {
-  curl -s $endpoint$1 \
-       -H "Authorization: token $auth_token" \
-       -H 'Content-Type: application/json' \
-       "${@:2}"
-}
-
-
-# Create a new environment variable for the repo and return its ID. First
-# argument is the environment variable name, and the second is the value.
-#
-function env-var {
-  travis-api /settings/env_vars?repository_id=$repo_id \
-             -d "{\"env_var\":{\"name\":\"$1\",\"value\":\"$2\",\"public\":true}}" |
-    sed 's/{"env_var":{"id":"\([^"]*\)",.*/\1/'
-}
-
-# Get the build ID of the last master build.
-#
-last_master_build_id=`travis-api /repos/$repo_id/branches/master |
-                      sed 's/{"branch":{"id":\([0-9]*\),.*/\1/'`
-
-# Set the three environment variables needed, and capture their IDs so that they
-# can be removed later.
-#
-env_var_ids=(`env-var DEPENDENT_BUILD true`
-             `env-var TRIGGER_COMMIT $TRAVIS_COMMIT`
-             `env-var TRIGGER_REPO $TRAVIS_REPO_SLUG`)
-
-# Restart the last master build.
-#
-travis-api /builds/$last_master_build_id/restart -X POST
-
-# Wait for the build to start using the new environment variables.
-#
-until travis-api /builds/$last_master_build_id | grep '"state":"started"'; do
-  sleep 5
-done
-
-# Remove all of the environment variables set above. This does mean that if this
-# script is terminated for whatever reason, these will need to be cleaned up
-# manually. We can do this either through the API, or by going to Settings ->
-# Environment Variables in the Travis web interface.
-#
-for env_var_id in "${env_var_ids[@]}"; do
-  travis-api /settings/env_vars/$env_var_id?repository_id=$repo_id -X DELETE
-done
+curl -s -X POST \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Travis-API-Version: 3" \
+  -H "Authorization: token $auth_token" \
+  -d "$body" \
+  https://api.travis-ci.org/repo/alphagov/notifications-functional-tests/requests
