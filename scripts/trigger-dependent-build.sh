@@ -20,4 +20,4 @@
 # respectively; enterprise users will have their own hostname.
 #
 
-curl -vvv -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token dn57A25LwxDu9Kj_3aaSOg" -d '{"request":{"branch":"master"}}' https://api.travis-ci.org/repo/alphagov%2Fnotify-functional-tests/requests
+curl -vvv -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $auth_token" -d '{"request":{"branch":"master"}}' https://api.travis-ci.org/repo/alphagov%2Fnotify-functional-tests/requests
