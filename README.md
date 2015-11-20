@@ -1,6 +1,6 @@
 https://travis-ci.org/alphagov/notifications-delivery-api.svg
 
-# notify-delivery
+# notifications-delivery
 Application to handle the interactions with the external message providers.
 
 Job to read notifications from the queue.
