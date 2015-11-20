@@ -1,7 +1,10 @@
-https://travis-ci.org/alphagov/notify-notifications-api.svg
+https://travis-ci.org/alphagov/notifications-delivery-api.svg
 
 # notify-delivery
-Application to handle delivery of notifications
+Application to handle the interactions with the external message providers.
 
+Job to read notifications from the queue.
 
-Make a change
+Send the notifications.
+
+Handle notification rate limiting.
