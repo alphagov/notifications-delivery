@@ -1,5 +1,4 @@
-https://travis-ci.org/alphagov/notifications-delivery-api.svg
-
+[https://api.travis-ci.org/alphagov/notifications-delivery.svg](https://api.travis-ci.org/alphagov/notifications-delivery.svg)
 # notifications-delivery
 Application to handle the interactions with the external message providers.
 
