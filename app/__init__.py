@@ -16,11 +16,13 @@ def create_app(config_name):
 
     logging.init_app(application)
 
-    from .main import main as main_blueprint
+    from app.main.views import main as main_blueprint
     application.register_blueprint(main_blueprint)
 
-    from .status import status as status_blueprint
+    from app.status.rest import status as status_blueprint
     application.register_blueprint(status_blueprint)
+
+    register_error_handlers(application)
 
     return application
 
@@ -74,3 +76,10 @@ def convert_to_number(value):
         return float(value) if "." in value else int(value)
     except (TypeError, ValueError):
         return value
+
+
+def register_error_handlers(application):
+    import app.errors
+    application.errorhandler(400)(app.errors.bad_request)
+    application.errorhandler(404)(app.errors.not_found)
+    application.errorhandler(500)(app.errors.internal_server_error)
