@@ -2,14 +2,18 @@ from clients.email.email_client import (
     EmailClient, EmailClientException)
 
 
-class AmazonSesClient(EmailClient):
+class AwsSesClientException(EmailClientException):
+    pass
+
+
+class AwsSesClient(EmailClient):
     '''
     Amazon SES email client.
     '''
 
     def __init__(self, client, *args, **kwargs):
         self._client = client
-        super(AmazonSesClient, self).__init__(*args, **kwargs)
+        super(AwsSesClient, self).__init__(*args, **kwargs)
 
     def send_email(self,
                    source,
@@ -25,7 +29,7 @@ class AmazonSesClient(EmailClient):
             elif reply_to_addresses is None:
                 reply_to_addresses = []
 
-            self._client.send_email(
+            response = self._client.send_email(
                 Source=source,
                 Destination={
                     'ToAddresses': to_addresses,
@@ -41,8 +45,7 @@ class AmazonSesClient(EmailClient):
                             'Data': body}}
                 },
                 ReplyToAddresses=reply_to_addresses)
+            return response['MessageId']
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             # TODO logging exceptions
-            raise EmailClientException(str(e))
+            raise AwsSesClientException(str(e))
