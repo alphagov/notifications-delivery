@@ -24,6 +24,8 @@ def create_app(config_name):
 
     register_error_handlers(application)
 
+    init_scheduler()
+
     return application
 
 
@@ -83,3 +85,11 @@ def register_error_handlers(application):
     application.errorhandler(400)(errors.bad_request)
     application.errorhandler(404)(errors.not_found)
     application.errorhandler(500)(errors.internal_server_error)
+
+
+def init_scheduler():
+    import atexit
+    from notifications_delivery.job.job_scheduler import JobScheduler
+    scheduler = JobScheduler()
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
