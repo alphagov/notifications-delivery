@@ -1,4 +1,4 @@
-from clients.email.email_client import (
+from notifications_delivery.clients.email.email_client import (
     EmailClient, EmailClientException)
 
 
