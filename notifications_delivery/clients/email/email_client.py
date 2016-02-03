@@ -1,4 +1,4 @@
-from notify.clients.client import (Client, ClientException)
+from notifications_delivery.clients.client import (Client, ClientException)
 
 
 class EmailClientException(ClientException):

@@ -6,7 +6,7 @@ import os
 
 from flask.ext.script import Manager, Server
 
-from app import create_app
+from notifications_delivery.app import create_app
 
 application = create_app(os.getenv('NOTIFY_API_ENVIRONMENT') or 'development')
 manager = Manager(application)

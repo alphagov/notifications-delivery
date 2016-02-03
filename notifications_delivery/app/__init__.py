@@ -16,10 +16,10 @@ def create_app(config_name):
 
     logging.init_app(application)
 
-    from app.main.views import main as main_blueprint
+    from notifications_delivery.app.main.views import main as main_blueprint
     application.register_blueprint(main_blueprint)
 
-    from app.status.rest import status as status_blueprint
+    from notifications_delivery.app.status.rest import status as status_blueprint
     application.register_blueprint(status_blueprint)
 
     register_error_handlers(application)
@@ -79,7 +79,7 @@ def convert_to_number(value):
 
 
 def register_error_handlers(application):
-    import app.errors
-    application.errorhandler(400)(app.errors.bad_request)
-    application.errorhandler(404)(app.errors.not_found)
-    application.errorhandler(500)(app.errors.internal_server_error)
+    import notifications_delivery.app.errors as errors
+    application.errorhandler(400)(errors.bad_request)
+    application.errorhandler(404)(errors.not_found)
+    application.errorhandler(500)(errors.internal_server_error)

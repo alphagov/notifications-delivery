@@ -1,5 +1,5 @@
 from moto import mock_ses
-from notify.clients.email.aws_ses import (AwsSesClient, AwsSesClientException)
+from notifications_delivery.clients.email.aws_ses import (AwsSesClient, AwsSesClientException)
 
 
 @mock_ses
