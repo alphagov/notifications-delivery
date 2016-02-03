@@ -3,8 +3,6 @@ from notifications_delivery.clients.s3.aws_s3 import get_csv_from_s3
 
 from config import Config
 
-import boto3
-
 
 def process_jobs():
     region = Config.AWS_REGION

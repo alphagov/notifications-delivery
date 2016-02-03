@@ -1,10 +1,5 @@
-import json
-import uuid
-
 import pytest
 import boto3
-
-import moto
 
 
 @pytest.fixture(scope='session')
@@ -13,6 +8,15 @@ def aws_client():
                         region_name='eu-west-1',
                         aws_access_key_id='sample_key',
                         aws_secret_access_key='sample_key')
+
+
+@pytest.fixture(scope='function')
+def mock_get_messages(mocker):
+
+    def _get_messages(region, queue_name, **kwargs):
+        return []
+
+    return mocker.patch('notifications_delivery.job.jobs.get_messages', side_effect=_get_messages)
 
 
 @pytest.fixture(scope='function')
