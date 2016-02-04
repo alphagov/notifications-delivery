@@ -5,9 +5,9 @@ from notifications_delivery.job.jobs import process_jobs
 
 class JobScheduler(object):
 
-    def __init__(self):
+    def __init__(self, interval_seconds=60):
         self.scheduler = BackgroundScheduler()
-        self.scheduler.add_job(process_jobs, 'interval', seconds=30)
+        self.scheduler.add_job(process_jobs, 'interval', seconds=interval_seconds)
 
     def start(self):
         self.scheduler.start()
