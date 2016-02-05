@@ -54,7 +54,8 @@ def delivery_config():
         'DELIVERY_LOG_LEVEL': 'DEBUG',
         'PROCESSOR_MAX_NUMBER_OF_MESSGAES': 1,
         'PROCESSOR_VISIBILITY_TIMEOUT': 60,
-        'AWS_REGION': 'eu-west-1'
+        'AWS_REGION': 'eu-west-1',
+        'NOTIFICATION_QUEUE_PREFIX': 'notification'
     }
 
 

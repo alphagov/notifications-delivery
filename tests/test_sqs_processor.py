@@ -9,7 +9,7 @@ def test_process_message_from_queue(mocker,
                                     ):
     queue = _populate_queue_with_one_message(mocker)
     assert queue.count() == 1
-    process_all_queues(delivery_config)
+    process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
     assert queue.count() == 0
 
 
@@ -18,7 +18,7 @@ def test_empty_queue(mocker,
                      delivery_config):
     queue = _create_queue_no_messages(mocker)
     assert queue.count() == 0
-    process_all_queues(delivery_config)
+    process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
     assert queue.count() == 0
 
 

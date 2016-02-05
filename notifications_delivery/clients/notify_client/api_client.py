@@ -1,4 +1,4 @@
-from client.base import BaseAPIClient
+from notifications_python_client.base import BaseAPIClient
 
 
 class ApiClient(BaseAPIClient):
@@ -15,3 +15,6 @@ class ApiClient(BaseAPIClient):
     def send_sms(self, number, template_id):
         notification = {"to": number,  "template": template_id}
         return self.post('/notifications/sms', data=notification)
+
+    def get_template(self, service_id, template_id):
+        return self.get('/service/{}/template/{}'.format(service_id, template_id))
