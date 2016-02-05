@@ -19,7 +19,7 @@ class Config(object):
     API_HOST_NAME = os.getenv('API_HOST_NAME')
     ADMIN_CLIENT_USER_NAME = os.getenv('ADMIN_CLIENT_USER_NAME')
     ADMIN_CLIENT_SECRET = os.getenv('ADMIN_CLIENT_SECRET')
-    JOB_POLL_INTERVAL_SECONDS = os.getenv('JOB_POLL_INTERVAL_SECONDS', 60)
+    JOB_POLL_INTERVAL_SECONDS = os.getenv('JOB_POLL_INTERVAL_SECONDS', 30)
 
 
 class Development(Config):

@@ -114,6 +114,13 @@ def mock_get_file_from_s3(mocker):
 
 @pytest.fixture(scope='function')
 def mock_post_notifications(mocker):
-    def _send_sms(application, number, template_id):
+    def _send_sms(number, template_id):
         return jsonify({}), 200
     return mocker.patch('notifications_delivery.job.jobs.api_client.send_sms', side_effect=_send_sms)
+
+
+@pytest.fixture(scope='function')
+def mock_udpate_job(mocker):
+    def _update_job(job):
+        return jsonify({}), 200
+    return mocker.patch('notifications_delivery.job.jobs.api_client.update_job', side_effect=_update_job)
