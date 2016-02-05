@@ -3,10 +3,8 @@ import boto3
 import boto
 import moto
 
-<<<<<<< HEAD
 from botocore.exceptions import ClientError
 from botocore.parsers import ResponseParserError
-=======
 from flask import jsonify
 
 from notifications_delivery.app import create_app
@@ -25,15 +23,12 @@ def app_(request):
     request.addfinalizer(teardown)
     return app
 
->>>>>>> origin/master
-
 
 @pytest.fixture(scope='function')
 def ses_client():
     return boto3.client('ses',
                         region_name='eu-west-1',
                         aws_access_key_id='sample_key',
-<<<<<<< HEAD
                         aws_secret_access_key='sample_secret')
 
 
@@ -96,8 +91,6 @@ def populate_queue(sqs_resource, queue=None, message="Test Message"):
     msg = queue.new_message(message)
     queue.write(msg)
     return msg  # queue.send_message(MessageBody=message)['MessageId']
-=======
-                        aws_secret_access_key='sample_key')
 
 
 @pytest.fixture(scope='function')
@@ -124,4 +117,3 @@ def mock_post_notifications(mocker):
     def _send_sms(application, number, template_id):
         return jsonify({}), 200
     return mocker.patch('notifications_delivery.job.jobs.api_client.send_sms', side_effect=_send_sms)
->>>>>>> origin/master
