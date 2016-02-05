@@ -5,6 +5,10 @@ from flask import Flask
 from config import configs
 from utils import logging
 
+from notifications_delivery.clients.notify_client.api_client import ApiClient
+
+api_client = ApiClient()
+
 
 def create_app(config_name):
     application = Flask(__name__)
@@ -23,6 +27,10 @@ def create_app(config_name):
     application.register_blueprint(status_blueprint)
 
     register_error_handlers(application)
+
+    api_client.init_app(application)
+
+    init_scheduler(application)
 
     return application
 
@@ -83,3 +91,12 @@ def register_error_handlers(application):
     application.errorhandler(400)(errors.bad_request)
     application.errorhandler(404)(errors.not_found)
     application.errorhandler(500)(errors.internal_server_error)
+
+
+def init_scheduler(application):
+    import atexit
+    from notifications_delivery.job.job_scheduler import JobScheduler
+    interval_seconds = application.config['JOB_POLL_INTERVAL_SECONDS']
+    scheduler = JobScheduler(interval_seconds=interval_seconds)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
