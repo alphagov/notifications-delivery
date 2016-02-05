@@ -15,3 +15,9 @@ class ApiClient(BaseAPIClient):
     def send_sms(self, number, template_id):
         notification = {"to": number,  "template": template_id}
         return self.post('/notifications/sms', data=notification)
+
+    def update_job(self, job):
+        service_id = job['service']
+        job_id = job['id']
+        url = '/service/{}/job/{}'.format(service_id, job_id)
+        return self.put(url, data=job)
