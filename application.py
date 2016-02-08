@@ -21,6 +21,7 @@ def list_routes():
     for rule in sorted(application.url_map.iter_rules(), key=lambda r: r.rule):
         print("{:10} {}".format(", ".join(rule.methods - set(['OPTIONS', 'HEAD'])), rule.rule))
 
+
 @manager.command
 def process_queues():
     """Process all queues pulling one message from the queue."""

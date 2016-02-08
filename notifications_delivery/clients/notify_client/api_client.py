@@ -17,4 +17,4 @@ class ApiClient(BaseAPIClient):
         return self.post('/notifications/sms', data=notification)
 
     def get_template(self, service_id, template_id):
-        return self.get('/service/{}/template/{}'.format(service_id, template_id))
+        return self.get('/service/{}/template/{}'.format(service_id, template_id))['data']
