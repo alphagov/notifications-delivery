@@ -11,7 +11,6 @@ def test_empty_queue(mocker,
     process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
 
 
-@pytest.mark.xfail(reason="Travis doesn't like me.")
 @moto.mock_sqs
 def test_process_sms_content_message(mocker,
                                      delivery_config,
@@ -24,6 +23,7 @@ def test_process_sms_content_message(mocker,
     assert msg.delete.call_count == 1
 
 
+@pytest.mark.xfail(reason="Travis doesn't like me.")
 @moto.mock_sqs
 def test_process_email_message(mocker,
                                delivery_config,
