@@ -44,7 +44,9 @@ def test_process_job_posts_notification_and_updates_job(app_,
                                                         mock_udpate_job):
     job = setup_job_mock_queue()
     file_contents = mock_get_file_from_s3.side_effect(job['bucket_name'], job['id'])
+    service_id = job['service']
     template_id = job['template']
+    job_id = job['id']
     numbers = get_numbers(file_contents)
 
     with app_.test_request_context():
@@ -52,7 +54,8 @@ def test_process_job_posts_notification_and_updates_job(app_,
         process_jobs()
 
         from unittest.mock import call
-        calls = [call(number, template_id) for number in numbers]
+
+        calls = [call(number, service_id, template_id, job_id) for number in numbers]
 
         assert mock_post_notifications.call_count == 9
         mock_post_notifications.assert_has_calls(calls)
