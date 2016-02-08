@@ -7,7 +7,7 @@ class JobScheduler(object):
 
     def __init__(self, interval_seconds=60):
         self.scheduler = BackgroundScheduler()
-        self.scheduler.add_job(process_jobs, 'interval', seconds=interval_seconds)
+        self.scheduler.add_job(process_jobs, 'interval', seconds=interval_seconds, max_instances=1)
 
     def start(self):
         self.scheduler.start()

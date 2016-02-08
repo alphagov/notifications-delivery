@@ -18,3 +18,9 @@ class ApiClient(BaseAPIClient):
 
     def get_template(self, service_id, template_id):
         return self.get('/service/{}/template/{}'.format(service_id, template_id))['data']
+
+    def update_job(self, job):
+        service_id = job['service']
+        job_id = job['id']
+        url = '/service/{}/job/{}'.format(service_id, job_id)
+        return self.put(url, data=job)
