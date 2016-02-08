@@ -9,12 +9,13 @@ class ApiClient(BaseAPIClient):
 
     def init_app(self, app):
         self.base_url = app.config['API_HOST_NAME']
-        self.client_id = app.config['ADMIN_CLIENT_USER_NAME']
-        self.secret = app.config['ADMIN_CLIENT_SECRET']
+        self.client_id = app.config['DELIVERY_CLIENT_USER_NAME']
+        self.secret = app.config['DELIVERY_CLIENT_SECRET']
 
-    def send_sms(self, number, template_id):
-        notification = {"to": number,  "template": template_id}
-        return self.post('/notifications/sms', data=notification)
+    def send_sms(self, number, service_id, template_id, job_id):
+        url = '/notifications/sms/service/{}'.format(service_id)
+        notification = {"to": number,  "job": job_id, "template": template_id}
+        return self.post(url, data=notification)
 
     def get_template(self, service_id, template_id):
         return self.get('/service/{}/template/{}'.format(service_id, template_id))['data']

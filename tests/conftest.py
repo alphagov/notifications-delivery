@@ -65,8 +65,8 @@ def delivery_config():
         'NOTIFY_DATA_API_URL': '',
         'NOTIFY_DATA_API_AUTH_TOKEN': '',
         'API_HOST_NAME': '',
-        'ADMIN_CLIENT_USER_NAME': '',
-        'ADMIN_CLIENT_SECRET': '',
+        'DELIVERY_CLIENT_USER_NAME': '',
+        'DELIVERY_CLIENT_SECRET': '',
         'NOTIFICATION_ATTRIBUTES': ['type', 'message_id', 'service_id', 'template_id'],
         'SECRET_KEY': 'secret-key',
         'DANGEROUS_SALT': 'dangerous-salt'
@@ -103,7 +103,7 @@ def mock_get_file_from_s3(mocker):
 
 @pytest.fixture(scope='function')
 def mock_post_notifications(mocker):
-    def _send_sms(number, template_id):
+    def _send_sms(number, service_id, template_id, job_id):
         return jsonify({}), 200
     return mocker.patch('notifications_delivery.job.jobs.api_client.send_sms', side_effect=_send_sms)
 

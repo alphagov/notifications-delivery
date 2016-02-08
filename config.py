@@ -21,18 +21,18 @@ class Config(object):
     NOTIFY_JOB_QUEUE = os.getenv('NOTIFY_JOB_QUEUE', 'notify-jobs-queue')
 
     API_HOST_NAME = os.getenv('API_HOST_NAME')
-    ADMIN_CLIENT_USER_NAME = os.getenv('ADMIN_CLIENT_USER_NAME')
-    ADMIN_CLIENT_SECRET = os.getenv('ADMIN_CLIENT_SECRET')
+    DELIVERY_CLIENT_USER_NAME = os.getenv('DELIVERY_CLIENT_USER_NAME')
+    DELIVERY_CLIENT_SECRET = os.getenv('DELIVERY_CLIENT_SECRET')
     JOB_POLL_INTERVAL_SECONDS = os.getenv('JOB_POLL_INTERVAL_SECONDS', 30)
 
 
 class Development(Config):
     DEBUG = True
     API_HOST_NAME = 'http://localhost:6011'
-    ADMIN_CLIENT_USER_NAME = 'dev-notify-admin'
-    ADMIN_CLIENT_SECRET = 'dev-notify-secret-key'
     SECRET_KEY = 'secret-key'
     DANGEROUS_SALT = 'dangerous-salt'
+    DELIVERY_CLIENT_USER_NAME = 'dev-notify-delivery'
+    DELIVERY_CLIENT_SECRET = 'dev-notify-secret-key'
 
 
 class Test(Config):

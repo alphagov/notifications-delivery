@@ -121,8 +121,8 @@ def process_all_queues(config, queue_name_prefix):
     notify_alpha_client = NotifyAPIClient(base_url=config['NOTIFY_DATA_API_URL'],
                                           auth_token=config['NOTIFY_DATA_API_AUTH_TOKEN'])
     notify_beta_client = ApiClient(base_url=config['API_HOST_NAME'],
-                                   client_id=config['ADMIN_CLIENT_USER_NAME'],
-                                   secret=config['ADMIN_CLIENT_SECRET'])
+                                   client_id=config['DELIVERY_CLIENT_USER_NAME'],
+                                   secret=config['DELIVERY_CLIENT_SECRET'])
     queues = _get_all_queues(config, queue_name_prefix)
     logger.debug("Pulling off {} queues.".format(len(queues)))
     for queue in queues:
