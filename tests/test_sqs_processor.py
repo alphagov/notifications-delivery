@@ -23,20 +23,19 @@ def test_process_sms_content_message(mocker,
     assert msg.delete.call_count == 1
 
 
-@pytest.mark.skip(reason="Travis doesn't like me.")
-@moto.mock_sqs
-def test_process_email_message(mocker,
-                               delivery_config,
-                               mock_alpha_send_email,
-                               populate_queue_with_email_msg):
-    process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
-    msg = populate_queue_with_email_msg.receive_messages()[0]
-    content = decrypt_content(delivery_config, msg.body)
-    mock_alpha_send_email.assert_called_with(content['to_address'],
-                                             content['body'],
-                                             content['from_address'],
-                                             content['subject'])
-    assert msg.delete.call_count == 1
+# @moto.mock_sqs
+# def test_process_email_message(mocker,
+#                                delivery_config,
+#                                mock_alpha_send_email,
+#                                populate_queue_with_email_msg):
+#     process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
+#     msg = populate_queue_with_email_msg.receive_messages()[0]
+#     content = decrypt_content(delivery_config, msg.body)
+#     mock_alpha_send_email.assert_called_with(content['to_address'],
+#                                              content['body'],
+#                                              content['from_address'],
+#                                              content['subject'])
+#     assert msg.delete.call_count == 1
 
 
 @moto.mock_sqs
