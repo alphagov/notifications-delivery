@@ -11,14 +11,14 @@ from notifications_delivery.job.jobs import (
 from notifications_delivery.clients.queue.aws_queue import get_messages
 
 
-def test_process_jobs_gets_messages_from_queue(mock_get_messages, mock_post_notifications, mock_udpate_job):
+def test_process_jobs_gets_messages_from_queue(mock_get_messages, mock_post_notifications, mock_update_job):
     process_jobs()
     mock_get_messages.assert_called_with('eu-west-1', 'notify-jobs-queue',
                                          message_attributes=['id', 'service', 'template', 'bucket_name'])
 
 
 @moto.mock_sqs
-def test_process_job_gets_file_from_s3(app_, mock_get_file_from_s3, mock_post_notifications, mock_udpate_job):
+def test_process_job_gets_file_from_s3(app_, mock_get_file_from_s3, mock_post_notifications, mock_update_job):
     with app_.test_request_context():
         job = setup_job_mock_queue()
         process_jobs()
@@ -41,7 +41,7 @@ def test_process_job_gets_job_messages(mock_post_notifications):
 def test_process_job_posts_notification_and_updates_job(app_,
                                                         mock_get_file_from_s3,
                                                         mock_post_notifications,
-                                                        mock_udpate_job):
+                                                        mock_update_job):
     job = setup_job_mock_queue()
     file_contents = mock_get_file_from_s3.side_effect(job['bucket_name'], job['id'])
     service_id = job['service']
@@ -60,7 +60,7 @@ def test_process_job_posts_notification_and_updates_job(app_,
         assert mock_post_notifications.call_count == 9
         mock_post_notifications.assert_has_calls(calls)
 
-        assert mock_udpate_job.call_count == 2
+        assert mock_update_job.call_count == 2
 
         import copy
         in_progress = copy.copy(job)
@@ -69,7 +69,7 @@ def test_process_job_posts_notification_and_updates_job(app_,
         finished['status'] = 'finished'
         calls = [call(in_progress), call(finished)]
 
-        mock_udpate_job.assert_has_calls(calls)
+        mock_update_job.assert_has_calls(calls)
 
 
 def setup_job_mock_queue():

@@ -2,7 +2,7 @@ import os
 import json
 import csv
 
-from client.errors import HTTPError
+from notifications_python_client.errors import HTTPError
 
 from notifications_delivery.clients.queue.aws_queue import get_messages
 from notifications_delivery.clients.s3.aws_s3 import get_csv_from_s3

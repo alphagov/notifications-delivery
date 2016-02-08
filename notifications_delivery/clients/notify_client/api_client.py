@@ -1,4 +1,4 @@
-from client.base import BaseAPIClient
+from notifications_python_client.base import BaseAPIClient
 
 
 class ApiClient(BaseAPIClient):
@@ -16,6 +16,9 @@ class ApiClient(BaseAPIClient):
         url = '/notifications/sms/service/{}'.format(service_id)
         notification = {"to": number,  "job": job_id, "template": template_id}
         return self.post(url, data=notification)
+
+    def get_template(self, service_id, template_id):
+        return self.get('/service/{}/template/{}'.format(service_id, template_id))['data']
 
     def update_job(self, job):
         service_id = job['service']

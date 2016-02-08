@@ -25,7 +25,9 @@ def list_routes():
 @manager.command
 def process_queues():
     """Process all queues pulling one message from the queue."""
-    process_all_queues(application.config)
+    # TODO possibly in the future have the prefix option on the management command.
+    queue_name_prefix = application.config['NOTIFICATION_QUEUE_PREFIX']
+    process_all_queues(application.config, queue_name_prefix)
 
 
 if __name__ == '__main__':
