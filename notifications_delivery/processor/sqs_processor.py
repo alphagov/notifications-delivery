@@ -58,26 +58,19 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
     type_ = message.message_attributes.get('type').get('StringValue')
     service_id = message.message_attributes.get('service_id').get('StringValue')
     template_id = message.message_attributes.get('template_id').get('StringValue')
+    job_id = content['job'] if 'job' in content else None
+    status = 'failed'
+    to = content['to'] if 'to' in content else content['to_address']
     response = None
-    if type_ == 'email':
-        try:
-            response = notify_alpha_client.send_email(
-                content['to_address'],
-                content['body'],
-                content['from_address'],
-                content['subject'])
-        except alphaHTTPError as e:
-            if e.status_code == 503:
-                raise ExternalConnectionError(e)
-            else:
-                raise ProcessingError(e)
-        except alphaInvalidResponse as e:
-            raise ProcessingError(e)
-    elif type_ == 'sms':
-        if 'content' in content:
+    try:
+        if type_ == 'email':
             try:
-                response = notify_alpha_client.send_sms(
-                    content['to'], content['content'])
+                response = notify_alpha_client.send_email(
+                    content['to_address'],
+                    content['body'],
+                    content['from_address'],
+                    content['subject'])
+                status = 'sent'
             except alphaHTTPError as e:
                 if e.status_code == 503:
                     raise ExternalConnectionError(e)
@@ -85,28 +78,49 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
                     raise ProcessingError(e)
             except alphaInvalidResponse as e:
                 raise ProcessingError(e)
-        elif 'template' in content:
-            try:
-                template_response = notify_beta_client.get_template(service_id, template_id)
-            except HTTP503Error as e:
-                raise ExternalConnectionError(e)
-            except HTTPError as e:
-                raise ProcessingError(e)
-            except InvalidResponse as e:
-                raise InvalidResponse(e)
-            try:
-                response = notify_alpha_client.send_sms(content['to'], template_response['content'])
-            except alphaHTTPError as e:
-                if e.status_code == 503:
-                    raise ExternalConnectionError(e)
-                else:
+        elif type_ == 'sms':
+            if 'content' in content:
+                try:
+                    response = notify_alpha_client.send_sms(
+                        content['to'], content['content'])
+                    status = 'sent'
+                except alphaHTTPError as e:
+                    if e.status_code == 503:
+                        raise ExternalConnectionError(e)
+                    else:
+                        raise ProcessingError(e)
+                except alphaInvalidResponse as e:
                     raise ProcessingError(e)
-            except alphaInvalidResponse as e:
-                raise ProcessingError(e)
-    else:
-        error_msg = "Invalid type {} for message id {}".format(
-            type_, message.message_attributes.get('message_id').get('StringValue'))
-        raise ProcessingError(error_msg)
+            elif 'template' in content:
+                try:
+                    template_response = notify_beta_client.get_template(service_id, template_id)
+                except HTTP503Error as e:
+                    raise ExternalConnectionError(e)
+                except HTTPError as e:
+                    raise ProcessingError(e)
+                except InvalidResponse as e:
+                    raise InvalidResponse(e)
+                try:
+                    response = notify_alpha_client.send_sms(content['to'], template_response['content'])
+                    status = 'sent'
+                except alphaHTTPError as e:
+                    if e.status_code == 503:
+                        raise ExternalConnectionError(e)
+                    else:
+                        raise ProcessingError(e)
+                except alphaInvalidResponse as e:
+                    raise ProcessingError(e)
+        else:
+            error_msg = "Invalid type {} for message id {}".format(
+                type_, message.message_attributes.get('message_id').get('StringValue'))
+            raise ProcessingError(error_msg)
+    finally:
+        if job_id:
+            notify_beta_client.create_notification(service_id,
+                                                   template_id,
+                                                   job_id,
+                                                   to,
+                                                   status)
 
 
 def _get_message_id(message):

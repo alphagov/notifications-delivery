@@ -9,7 +9,7 @@ from flask import jsonify
 from tests import (
     create_sqs_connection, create_sqs_resource, create_queue,
     create_email_notification, create_sms_content_notification,
-    create_message, create_sms_template_notification)
+    create_message, create_sms_template_notification, create_sms_job_notification)
 from notifications_delivery.processor.sqs_processor import (
     ProcessingError, ExternalConnectionError)
 
@@ -112,7 +112,7 @@ def mock_post_notifications(mocker):
 def mock_alpha_send_sms(mocker):
 
     def _send_sms(to, content):
-        return {}
+        return {'something': 'something'}
     return mocker.patch(
         'notifications_delivery.processor.sqs_processor.NotifyAPIClient.send_sms',
         side_effect=_send_sms)
@@ -142,7 +142,7 @@ def mock_alpha_send_sms_http_503(mocker):
 def mock_alpha_send_email(mocker):
 
     def _send_email(to, body, from_, subject):
-        return {}
+        return {'something': 'something'}
     return mocker.patch(
         'notifications_delivery.processor.sqs_processor.NotifyAPIClient.send_email',
         side_effect=_send_email)
@@ -162,6 +162,22 @@ def mock_beta_get_template(mocker):
     return mocker.patch(
         'notifications_delivery.processor.sqs_processor.ApiClient.get_template',
         side_effect=_get_template)
+
+
+@pytest.fixture(scope='function')
+def mock_beta_create_notification(mocker):
+    def _create_notification(service_id, template_id, job_id, to, status):
+        return {
+            'id': 123,
+            'service': service_id,
+            'template': template_id,
+            'job': job_id,
+            'to': to,
+            'status': status
+        }
+    return mocker.patch(
+        'notifications_delivery.processor.sqs_processor.ApiClient.create_notification',
+        side_effect=_create_notification)
 
 
 @pytest.fixture(scope='function')
@@ -212,6 +228,28 @@ def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='te
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
     notification = create_sms_template_notification()
+    msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
+
+    def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
+        return [msg]
+
+    setattr(queue, 'receive_messages', _receive)
+
+    def _get(config, queue_name_prefix=''):
+        return [queue]
+
+    mocker.patch(
+        'notifications_delivery.processor.sqs_processor._get_all_queues', side_effect=_get)
+    return queue
+
+
+@pytest.fixture(scope='function')
+def populate_queue_with_sms_job_msg(mocker, delivery_config, queue_name='test-queue'):
+    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+    sqs_connection = create_sqs_connection()
+    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
+    queue = create_queue(sqs_connection, queue_name)
+    notification = create_sms_job_notification()
     msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
