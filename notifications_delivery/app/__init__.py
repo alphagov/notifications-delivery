@@ -35,7 +35,7 @@ def create_app(config_name, config_overrides=None):
     return application
 
 
-def init_app(app, config_overrides):
+def init_app(app, config_overrides=None):
     for key, value in app.config.items():
         if key in os.environ:
             app.config[key] = convert_to_boolean(os.environ[key])
@@ -43,7 +43,7 @@ def init_app(app, config_overrides):
     if config_overrides:
         for key in app.config.keys():
             if key in config_overrides:
-                    app.config[key] = config_overrides[key]
+                app.config[key] = config_overrides[key]
 
 
 def convert_to_boolean(value):
@@ -102,6 +102,6 @@ def init_scheduler(application):
     import atexit
     from notifications_delivery.job.job_scheduler import JobScheduler
     interval_seconds = application.config['JOB_POLL_INTERVAL_SECONDS']
-    scheduler = JobScheduler(interval_seconds=interval_seconds)
+    scheduler = JobScheduler(application.config, interval_seconds=interval_seconds)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())

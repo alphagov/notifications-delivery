@@ -174,12 +174,9 @@ def process_all_queues(config, queue_name_prefix):
             logger.exception(e)
 
 
-def process_notification_job():
-    from notifications_delivery.app import create_app
-    app = create_app(os.getenv('NOTIFICATIONS_DELIVERY_ENVIRONMENT', 'development'))
-    with app.app_context():
-        try:
-            process_all_queues(app.config, app.config['NOTIFICATION_QUEUE_PREFIX'])
-        except Exception as e:
-            # TODO log errors and report to api
-            app.logger.error(e)
+def process_notification_job(config):
+    try:
+        process_all_queues(config, config['NOTIFICATION_QUEUE_PREFIX'])
+    except Exception as e:
+        # TODO log errors and report to api
+        print(e)

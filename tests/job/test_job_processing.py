@@ -11,19 +11,18 @@ from notifications_delivery.job.jobs import (
 from notifications_delivery.clients.queue.aws_queue import get_messages
 
 
-def test_process_jobs_gets_messages_from_queue(mock_get_messages, mock_post_notifications, mock_update_job):
-    process_jobs()
+def test_process_jobs_gets_messages_from_queue(app_, mock_get_messages, mock_post_notifications, mock_update_job):
+    process_jobs(app_.config)
     mock_get_messages.assert_called_with('eu-west-1', 'notify-jobs-queue',
                                          message_attributes=['id', 'service', 'template', 'bucket_name'])
 
 
 @moto.mock_sqs
 def test_process_job_gets_file_from_s3(app_, mock_get_file_from_s3, mock_post_notifications, mock_update_job):
-    with app_.test_request_context():
-        job = setup_job_mock_queue()
-        process_jobs()
-        bucket_name = 'service-{}-notify'.format(job['service'])
-        mock_get_file_from_s3.assert_called_with(bucket_name, job['id'])
+    job = setup_job_mock_queue()
+    process_jobs(app_.config)
+    bucket_name = 'service-{}-notify'.format(job['service'])
+    mock_get_file_from_s3.assert_called_with(bucket_name, job['id'])
 
 
 @moto.mock_sqs
@@ -51,7 +50,7 @@ def test_process_job_posts_notification_and_updates_job(app_,
 
     with app_.test_request_context():
 
-        process_jobs()
+        process_jobs(app_.config)
 
         from unittest.mock import call
 

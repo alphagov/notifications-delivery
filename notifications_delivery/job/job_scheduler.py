@@ -6,13 +6,20 @@ from notifications_delivery.processor.sqs_processor import process_notification_
 
 class JobScheduler(object):
 
-    def __init__(self, interval_seconds=60):
+    def __init__(self, config, interval_seconds=60):
         self.scheduler = BackgroundScheduler()
-        self.scheduler.add_job(process_jobs, 'interval', seconds=interval_seconds, max_instances=1)
-        self.scheduler.add_job(process_notification_job, 'interval', seconds=interval_seconds, max_instances=1)
+        self.scheduler.add_job(self.job_process, 'interval', seconds=interval_seconds, max_instances=1)
+        self.scheduler.add_job(self.notification_job_process, 'interval', seconds=interval_seconds, max_instances=1)
+        self.config = config
 
     def start(self):
         self.scheduler.start()
 
     def shutdown(self):
         self.scheduler.shutdown(wait=True)
+
+    def job_process(self):
+        process_jobs(self.config)
+
+    def notification_job_process(self):
+        process_notification_job(self.config)
