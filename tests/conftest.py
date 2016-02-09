@@ -31,17 +31,17 @@ def app_(request):
 
 
 @pytest.fixture(scope='function')
-def ses_client():
+def ses_client(region_name='eu-west-1'):
     return boto3.client('ses',
-                        region_name='eu-west-1',
+                        region_name=region_name,
                         aws_access_key_id='sample_key',
                         aws_secret_access_key='sample_secret')
 
 
 @pytest.fixture(scope='function')
-def sqs_client():
+def sqs_client(region_name='eu-west-1'):
     return boto3.client('sqs',
-                        region_name='eu-west-1',
+                        region_name=region_name,
                         aws_access_key_id='sample_key',
                         aws_secret_access_key='sample_secret')
 
@@ -166,7 +166,7 @@ def mock_beta_get_template(mocker):
 
 @pytest.fixture(scope='function')
 def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     queue = create_queue(sqs_connection, queue_name)
 
@@ -185,9 +185,9 @@ def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource()
+    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
     notification = create_sms_content_notification()
     msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
@@ -207,9 +207,9 @@ def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='tes
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource()
+    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
     notification = create_sms_template_notification()
     msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
@@ -229,8 +229,9 @@ def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='te
 
 @pytest.fixture(scope='function')
 def populate_queue_with_email_msg(mocker, delivery_config, queue_name='test-queue'):
+    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource()
+    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
     notification = create_email_notification()
     msg = create_message(delivery_config, sqs_resource, queue, "email", notification)
