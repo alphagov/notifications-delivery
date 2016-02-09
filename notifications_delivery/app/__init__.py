@@ -10,13 +10,13 @@ from notifications_delivery.clients.notify_client.api_client import ApiClient
 api_client = ApiClient()
 
 
-def create_app(config_name):
+def create_app(config_name, config_overrides=None):
     application = Flask(__name__)
 
     application.config['NOTIFICATIONS_DELIVERY_ENVIRONMENT'] = config_name
     application.config.from_object(configs[config_name])
 
-    init_app(application)
+    init_app(application, config_overrides)
 
     logging.init_app(application)
 
@@ -35,10 +35,15 @@ def create_app(config_name):
     return application
 
 
-def init_app(app):
+def init_app(app, config_overrides):
     for key, value in app.config.items():
         if key in os.environ:
             app.config[key] = convert_to_boolean(os.environ[key])
+
+    if config_overrides:
+        for key in app.config.keys():
+            if key in config_overrides:
+                    app.config[key] = config_overrides[key]
 
 
 def convert_to_boolean(value):
