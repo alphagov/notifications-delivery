@@ -15,12 +15,14 @@ def decrypt_content(config, encrypted_content):
     return serializer.loads(encrypted_content, salt=config.get('DANGEROUS_SALT'))
 
 
+@moto.mock_sqs
 def create_sqs_connection():
     return boto.connect_sqs('the_key', 'the_secret')
 
 
+@moto.mock_sqs
 def create_sqs_resource():
-    return boto3.resource('sqs')
+    return boto3.resource('sqs', region_name='eu-west-1')
 
 
 @moto.mock_sqs

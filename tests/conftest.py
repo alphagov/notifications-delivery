@@ -166,7 +166,7 @@ def mock_beta_get_template(mocker):
 
 @pytest.fixture(scope='function')
 def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name='eu-west-1')
     sqs_connection = create_sqs_connection()
     queue = create_queue(sqs_connection, queue_name)
 
@@ -185,7 +185,7 @@ def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name='eu-west-1')
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource()
     queue = create_queue(sqs_connection, queue_name)
@@ -207,7 +207,7 @@ def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='tes
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='test-queue'):
-    # TODO why doesn't this work in pytest fixtures?
+    boto3.setup_default_session(region_name='eu-west-1')
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource()
     queue = create_queue(sqs_connection, queue_name)
@@ -229,6 +229,7 @@ def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='te
 
 @pytest.fixture(scope='function')
 def populate_queue_with_email_msg(mocker, delivery_config, queue_name='test-queue'):
+    boto3.setup_default_session(region_name='eu-west-1')
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource()
     queue = create_queue(sqs_connection, queue_name)
