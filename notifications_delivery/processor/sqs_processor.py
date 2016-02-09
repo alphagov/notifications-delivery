@@ -58,6 +58,7 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
     type_ = message.message_attributes.get('type').get('StringValue')
     service_id = message.message_attributes.get('service_id').get('StringValue')
     template_id = message.message_attributes.get('template_id').get('StringValue')
+    response = None
     if type_ == 'email':
         try:
             response = notify_alpha_client.send_email(
