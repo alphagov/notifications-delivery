@@ -14,3 +14,28 @@ notifications:
   slack:
     rooms:
       secure: VfgEJUUFQ2L2MqWhwHFXUPIYum+Kb3yFTwPSTUyxAK3tdO41B8KBu9U5fHI0KDJrwNj0PivtK5BBrsfvO8RsZcwBiOzu6vzUriXA7lkmtWST6+yVgNM9DecRac45JNSvMDgpOy1vOnBCKmCY8jHdQM9lq0fPEPZdzPJzXY1Y3F2MGDDbvgC58ILJNmQNVeenPxaFPYE3sgjcTy1HP7W+o2ErsxD+FatT9wHMOL15xTgBI9D3cD4S5soYbQcFd1lJ3QdY++yJ/+qLypZgIdcC/sZD5OUXNzGM0yFbj/C+dxCaEanM+GxlB+Elp78exBfUeS6jIi0aMLmsaBe/Ks/DDgCSa0MOq3KZEV3Ly80oldvQKPaPY84UuaTaMzAuMTFnAGK6dkvSqem+IGUs8731JEYzqUkmeaY1SqZkXaTVXDZ8WLtveyMbBNu8HEOLEToopbjYMrF00ipHh20Vh9FtNSB3eMz/oge3iHdlgrmaNIfC3NWzs8Iv/kf56fBkHtC7i7p28jBO/Hqw2ylVR5m0j/cG0MHtA5ofO755tJ6fivi3dQ9oxKnbsmDNvR2engKjACTrmB0/rQRnry+GoNiWbBGy34Q8zXN80cmfLGfZWs5ID+b2QlY6awvdqzHoVDWd/T1qK4dqMyYk3DRQMvT4lDPvjfTJiHV+W8NE4MtL0Y8=
+deploy:
+- provider: s3
+  access_key_id: AKIAJH4VH557B5NXHROQ
+  secret_access_key: &1
+    secure: AIEuVSH1HjFIrOWwXoZQk9jrhnGWxXmCZSIMAduxZUZruxIeHmPO9DMUQw2SzHDXMOAXFEo3iWBXXPKkHlTVgWonTZ+HDEKcYUKhodT66TZR1rrItM150IdC/ze+fKQDUdoDj74ZNXuIse/bOF28KFgcZ4luLod4AQ83G6iDhh1n41MUCWKAMzXRV/rDi2AoS5tyYqn2X7TvnSohRIwzMYsjDpmjFFq9bB2m6kL9lBtXvk2ND/GdCjOQvKDmURfgTA+wGU/fWZrWHKCwACS+FdBeQ5ki/8t8gfxTfjBJcOzDzC2WZN7cWcSNXuT15DNDWmu03hY4yVcmoDZYn9Ev9V+U+YJPhe8WtnGCvpbCZ1UYQh86swYBK1qKZmXMu0cea/zawcrARWum58tGrFp5yTKBap7P4huHqx8A5x7o/axOuRyl0w04CzcMmXD6B6zzQ9EISlwSPfS7vIeX9rptKp7M8B5IrEw1PY9051p8WJfMi0HZy2XMT5aNcmrl+F5wOZC1m+jAE/HEyMQO9iMsq4vkvA28sTuSojOMfoiiXDQ4tXBbuttAYh9l69/KCu2npHSQXe1/6Ly2mPat9HDJm2NTNTReBRhp+e1HxwfpI0mg9atn2lcqZIQFcPNBQ7Y8riMmoiZVQfsH7PEOXc65aDghFr1nhCHcd9UmM0mZPEc=
+  local_dir: dpl_cd_upload
+  skip_cleanup: true
+  on: &2
+    repo: alphagov/notifications-delivery
+  bucket: notifications-delivery-codedeploy
+  region: eu-west-1
+- provider: codedeploy
+  access_key_id: AKIAJH4VH557B5NXHROQ
+  secret_access_key: *1
+  bucket: notifications-delivery-codedeploy
+  key: notifications-delivery-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip
+  bundle_type: zip
+  application: notifications-delivery
+  deployment_group: notifications_delivery_deployment_group
+  region: eu-west-1
+  on: *2
+before_deploy:
+- mkdir -p dpl_cd_upload
+- zip -r notifications-delivery *
+- mv notifications-delivery.zip dpl_cd_upload/notifications-delivery-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip
