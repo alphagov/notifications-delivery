@@ -21,8 +21,8 @@ def create_sqs_connection():
 
 
 @moto.mock_sqs
-def create_sqs_resource():
-    return boto3.resource('sqs', region_name='eu-west-1')
+def create_sqs_resource(region_name):
+    return boto3.resource('sqs', region_name=region_name)
 
 
 @moto.mock_sqs
