@@ -33,19 +33,32 @@ class Development(Config):
     DANGEROUS_SALT = 'dangerous-salt'
     DELIVERY_CLIENT_USER_NAME = 'dev-notify-delivery'
     DELIVERY_CLIENT_SECRET = 'dev-notify-secret-key'
+    NOTIFICATION_QUEUE_PREFIX = 'notification_development'
+
+
+class Preview(Config):
+    NOTIFICATION_QUEUE_PREFIX = 'notification_preview'
+
+
+class Staging(Config):
+    NOTIFICATION_QUEUE_PREFIX = 'notification_staging'
 
 
 class Test(Config):
     DEBUG = True
     SECRET_KEY = 'secret-key'
     DANGEROUS_SALT = 'dangerous-salt'
+    NOTIFICATION_QUEUE_PREFIX = 'notification_test'
 
 
 class Live(Config):
-    pass
+    NOTIFICATION_QUEUE_PREFIX = 'notification_live'
+
 
 configs = {
     'development': Development,
+    'preview': Preview,
+    'staging': Staging,
     'test': Test,
     'live': Live,
 }
