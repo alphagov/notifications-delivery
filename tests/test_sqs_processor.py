@@ -77,3 +77,23 @@ def test_process_sms_http_503(mocker,
     content = decrypt_content(delivery_config, msg.body)
     mock_alpha_send_sms_http_503.assert_called_with(content['to'], content['content'])
     assert msg.delete.call_count == 0
+
+
+@moto.mock_sqs
+def test_process_sms_job_notification(mocker,
+                                      delivery_config,
+                                      mock_alpha_send_sms,
+                                      mock_beta_get_template,
+                                      mock_beta_create_notification,
+                                      populate_queue_with_sms_job_msg):
+    process_all_queues(delivery_config, delivery_config['NOTIFICATION_QUEUE_PREFIX'])
+    msg = populate_queue_with_sms_job_msg.receive_messages()[0]
+    content = decrypt_content(delivery_config, msg.body)
+    service_id = msg.message_attributes.get('service_id').get('StringValue')
+    template_id = msg.message_attributes.get('template_id').get('StringValue')
+    mock_beta_get_template.assert_called_with(service_id, template_id)
+    template_json = mock_beta_get_template(service_id, template_id)
+    mock_alpha_send_sms.assert_called_with(content['to'], template_json['content'])
+    mock_beta_create_notification.assert_called_with(
+        service_id, template_id, content['job'], content['to'], 'sent')
+    assert msg.delete.call_count == 1

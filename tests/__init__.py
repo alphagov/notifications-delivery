@@ -41,6 +41,16 @@ def create_sms_template_notification(to=None, template=None):
     return {'to': to, 'template': template}
 
 
+def create_sms_job_notification(to=None, template=None, job=None):
+    if to is None:
+        to = "447700900986"
+    if template is None:
+        template = "1234"
+    if job is None:
+        job = '4567'
+    return {'to': to, 'template': template, 'job': job}
+
+
 def create_sms_content_notification(to=None, content=None):
     if to is None:
         to = "447700900986"
