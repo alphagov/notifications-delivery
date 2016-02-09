@@ -116,11 +116,19 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
             raise ProcessingError(error_msg)
     finally:
         if job_id:
-            notify_beta_client.create_notification(service_id,
-                                                   template_id,
-                                                   job_id,
-                                                   to,
-                                                   status)
+            try:
+                notify_beta_client.create_notification(
+                    service_id,
+                    template_id,
+                    job_id,
+                    to,
+                    status)
+            except HTTP503Error as e:
+                raise ExternalConnectionError(e)
+            except HTTPError as e:
+                raise ProcessingError(e)
+            except InvalidResponse as e:
+                raise InvalidResponse(e)
 
 
 def _get_message_id(message):
