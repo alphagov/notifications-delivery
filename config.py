@@ -23,7 +23,8 @@ class Config(object):
     API_HOST_NAME = os.getenv('API_HOST_NAME')
     DELIVERY_CLIENT_USER_NAME = os.getenv('DELIVERY_CLIENT_USER_NAME')
     DELIVERY_CLIENT_SECRET = os.getenv('DELIVERY_CLIENT_SECRET')
-    JOB_POLL_INTERVAL_SECONDS = os.getenv('JOB_POLL_INTERVAL_SECONDS', 30)
+    JOB_POLL_INTERVAL_SECONDS = int(os.getenv('JOB_POLL_INTERVAL_SECONDS', '5'))
+    DELIVERY_POLL_INTERVAL_SECONDS = int(os.getenv('DELIVERY_POLL_INTERVAL_SECONDS', '2'))
 
 
 class Development(Config):
@@ -33,15 +34,18 @@ class Development(Config):
     DANGEROUS_SALT = 'dangerous-salt'
     DELIVERY_CLIENT_USER_NAME = 'dev-notify-delivery'
     DELIVERY_CLIENT_SECRET = 'dev-notify-secret-key'
+    DELIVERY_LOG_LEVEL = 'INFO'
     NOTIFICATION_QUEUE_PREFIX = 'notification_development'
 
 
 class Preview(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_preview'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Staging(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_staging'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Test(Config):
@@ -49,10 +53,12 @@ class Test(Config):
     SECRET_KEY = 'secret-key'
     DANGEROUS_SALT = 'dangerous-salt'
     NOTIFICATION_QUEUE_PREFIX = 'notification_test'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Live(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_live'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 configs = {

@@ -101,7 +101,6 @@ def register_error_handlers(application):
 def init_scheduler(application):
     import atexit
     from notifications_delivery.job.job_scheduler import JobScheduler
-    interval_seconds = application.config['JOB_POLL_INTERVAL_SECONDS']
-    scheduler = JobScheduler(application.config, interval_seconds=interval_seconds)
+    scheduler = JobScheduler(application.config)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
