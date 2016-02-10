@@ -33,15 +33,18 @@ class Development(Config):
     DANGEROUS_SALT = 'dangerous-salt'
     DELIVERY_CLIENT_USER_NAME = 'dev-notify-delivery'
     DELIVERY_CLIENT_SECRET = 'dev-notify-secret-key'
+    DELIVERY_LOG_LEVEL = 'INFO'
     NOTIFICATION_QUEUE_PREFIX = 'notification_development'
 
 
 class Preview(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_preview'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Staging(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_staging'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Test(Config):
@@ -49,10 +52,12 @@ class Test(Config):
     SECRET_KEY = 'secret-key'
     DANGEROUS_SALT = 'dangerous-salt'
     NOTIFICATION_QUEUE_PREFIX = 'notification_test'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 class Live(Config):
     NOTIFICATION_QUEUE_PREFIX = 'notification_live'
+    DELIVERY_LOG_LEVEL = 'ERROR'
 
 
 configs = {
