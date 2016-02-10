@@ -34,8 +34,6 @@ class Development(Config):
     DELIVERY_CLIENT_USER_NAME = 'dev-notify-delivery'
     DELIVERY_CLIENT_SECRET = 'dev-notify-secret-key'
     NOTIFICATION_QUEUE_PREFIX = 'notification_development'
-    NOTIFY_LOG_PATH = '../var/log/notify/application.log'
-    DELIVERY_LOG_PATH = '../var/log/notify/delivery.log'
 
 
 class Preview(Config):

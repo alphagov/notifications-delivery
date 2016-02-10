@@ -1,5 +1,7 @@
 import boto3
 import logging
+
+import sys
 from itsdangerous import URLSafeSerializer
 from notify_client import NotifyAPIClient
 from notify_client.errors import HTTPError as alphaHTTPError
@@ -31,7 +33,10 @@ def _set_up_logger(config):
     if not turn_off:
         logger = logging.getLogger('delivery_notification')
         logger.setLevel(config['DELIVERY_LOG_LEVEL'])
-        fh = logging.FileHandler(config['DELIVERY_LOG_PATH'])
+        if config['NOTIFICATIONS_DELIVERY_ENVIRONMENT'] in ['development', 'test']:
+            fh = logging.StreamHandler(sys.stdout)
+        else:
+            fh = logging.FileHandler(config['DELIVERY_LOG_PATH'])
         fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)
