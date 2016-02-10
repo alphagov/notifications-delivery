@@ -69,7 +69,9 @@ def delivery_config():
         'DELIVERY_CLIENT_SECRET': '',
         'NOTIFICATION_ATTRIBUTES': ['type', 'message_id', 'service_id', 'template_id'],
         'SECRET_KEY': 'secret-key',
-        'DANGEROUS_SALT': 'dangerous-salt'
+        'DANGEROUS_SALT': 'dangerous-salt',
+        'TWILIO_ACCOUNT_SID': 'ACCOUNT_ID',
+        'TWILIO_AUTH_TOKEN': 'AUTH_TOKEN'
     }
 
 
@@ -178,6 +180,15 @@ def mock_beta_create_notification(mocker):
     return mocker.patch(
         'notifications_delivery.processor.sqs_processor.ApiClient.create_notification',
         side_effect=_create_notification)
+
+
+@pytest.fixture(scope='function')
+def mock_twilio_create(mocker):
+    def _create(body=None, to=None, from_=None):
+        return "123"
+    return mocker.patch(
+        'notifications_delivery.sms.twilio.TwilioRestClient.messages.create',
+        side_effect=_create)
 
 
 @pytest.fixture(scope='function')
