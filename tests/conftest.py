@@ -256,7 +256,34 @@ def mock_twilio_create_exception(mocker):
         raise TwilioRestException("http://www.google.com", "Exception")
     create_mock = Mock(**{'create.side_effect': _except})
     msgs_mock = Mock(messages=create_mock)
-    cls_mock = patch('notifications_delivery.clients.sms.twilio.TwilioRestClient', return_value=msgs_mock)
+    cls_mock = patch(
+        'notifications_delivery.clients.sms.twilio.TwilioRestClient',
+        return_value=msgs_mock)
+    return cls_mock
+
+
+@pytest.fixture(scope='function')
+def mock_twilio_get(mocker):
+    def _get(message_id):
+        return Mock(status='delivered')
+    get_mock = Mock(**{'get.side_effect': _get})
+    msgs_mock = Mock(messages=get_mock)
+    cls_mock = patch(
+        'notifications_delivery.clients.sms.twilio.TwilioRestClient',
+        return_value=msgs_mock)
+    return cls_mock
+
+
+@pytest.fixture(scope='function')
+def mock_twilio_get_exception(mocker):
+    def _except(message_id):
+        from notifications_delivery.clients.sms.twilio import TwilioRestException
+        raise TwilioRestException("http://www.google.com", "Exception")
+    get_mock = Mock(**{'get.side_effect': _except})
+    msgs_mock = Mock(messages=get_mock)
+    cls_mock = patch(
+        'notifications_delivery.clients.sms.twilio.TwilioRestClient',
+        return_value=msgs_mock)
     return cls_mock
 
 

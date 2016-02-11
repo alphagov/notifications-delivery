@@ -42,3 +42,13 @@ class TwilioClient(SmsClient):
         except TwilioRestException as e:
             logger.exception(e)
             raise SmsClientException(e)
+
+    def status(self, message_id):
+        try:
+            response = self.client.messages.get(message_id)
+            if response.status in ('delivered', 'undelivered', 'failed'):
+                return response.status
+            return None
+        except TwilioRestException as e:
+            logger.exception(e)
+            raise SmsClientException(e)
