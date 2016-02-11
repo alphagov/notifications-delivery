@@ -50,7 +50,7 @@ def test_send_sms_failed(delivery_config,
         twilio_client = TwilioClient(delivery_config)
         from twilio.rest import TwilioRestClient
         try:
-           message_id = twilio_client.send_sms(sms_template_notification, sms_content)
-           pytest.fail("Failed to raise SmsClientException")
+            message_id = twilio_client.send_sms(sms_template_notification, sms_content)
+            pytest.fail("Failed to raise SmsClientException")
         except SmsClientException as e:
-           pass
+            pass

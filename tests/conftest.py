@@ -309,13 +309,13 @@ def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_content_msg(mocker,
                                         delivery_config,
+                                        sms_content_notification,
                                         queue_name='test-queue'):
     boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    notification = create_sms_content_notification()
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
+    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_content_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
