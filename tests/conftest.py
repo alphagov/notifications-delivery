@@ -2,14 +2,13 @@ import pytest
 import boto3
 import boto
 import moto
+from unittest.mock import (Mock, patch)
 
 from botocore.exceptions import ClientError
 from botocore.parsers import ResponseParserError
 from flask import jsonify
 from tests import (
-    create_sqs_connection, create_sqs_resource, create_queue,
-    create_email_notification, create_sms_content_notification,
-    create_message, create_sms_template_notification, create_sms_job_notification)
+    create_sqs_connection, create_sqs_resource, create_queue, create_message)
 from notifications_delivery.processor.sqs_processor import (
     ProcessingError, ExternalConnectionError)
 
@@ -73,6 +72,64 @@ def delivery_config():
         'TWILIO_ACCOUNT_SID': 'ACCOUNT_ID',
         'TWILIO_AUTH_TOKEN': 'AUTH_TOKEN'
     }
+
+
+@pytest.fixture(scope='function')
+def sms_template_notification(to=None, template=None, id_=None):
+    if to is None:
+        to = "447700900986"
+    if template is None:
+        template = "1234"
+    if id_ is None:
+        id_ = '123'
+    return {'to': to, 'template': template, 'id': id_}
+
+
+@pytest.fixture(scope='function')
+def sms_job_notification(to=None, template=None, job=None, id_=None):
+    if to is None:
+        to = "447700900986"
+    if template is None:
+        template = "1234"
+    if job is None:
+        job = '4567'
+    if id_ is None:
+        id_ = '123'
+    return {'to': to, 'template': template, 'job': job, 'id': id_}
+
+
+@pytest.fixture(scope='function')
+def sms_content_notification(to=None, content=None, id_=None):
+    if to is None:
+        to = "447700900986"
+    if content is None:
+        content = "Test content"
+    if id_ is None:
+        id_ = '123'
+    return {'to': to, 'content': content, 'id': id_}
+
+
+@pytest.fixture(scope='function')
+def email_notification(to=None, body=None, from_=None, subject=None, id_=None):
+    if to is None:
+        to = "test@digital.cabinet-office.gov.uk"
+    if body is None:
+        body = "<Insert email content here>"
+    if from_ is None:
+        from_ = "notify@digital.cabinet-office.gov.uk"
+    if subject is None:
+        subject = "Email subject"
+    return {
+        'to_address': to,
+        'from_address': from_,
+        'body': body,
+        'subject': subject,
+        'id': id_}
+
+
+@pytest.fixture(scope='function')
+def sms_content():
+    return "sms content"
 
 
 @pytest.fixture(scope='function')
@@ -185,10 +242,22 @@ def mock_beta_create_notification(mocker):
 @pytest.fixture(scope='function')
 def mock_twilio_create(mocker):
     def _create(body=None, to=None, from_=None):
-        return "123"
-    return mocker.patch(
-        'notifications_delivery.sms.twilio.TwilioRestClient.messages.create',
-        side_effect=_create)
+        return Mock(sid="123")
+    create_mock = Mock('create', side_effect=_create)
+    msgs_mock = Mock(messages=create_mock())
+    cls_mock = patch('twilio.rest.TwilioRestClient', messages=msgs_mock)
+    return cls_mock
+
+
+@pytest.fixture(scope='function')
+def mock_twilio_create_exception(mocker):
+    def _except(body=None, to=None, from_=None):
+        from notifications_delivery.clients.sms.twilio import TwilioRestException
+        raise TwilioRestException("http://www.google.com", "Exception")
+    create_mock = Mock(**{'create.side_effect': _except})
+    msgs_mock = Mock(messages=create_mock)
+    cls_mock = patch('notifications_delivery.clients.sms.twilio.TwilioRestClient', return_value=msgs_mock)
+    return cls_mock
 
 
 @pytest.fixture(scope='function')
@@ -211,7 +280,9 @@ def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
 
 
 @pytest.fixture(scope='function')
-def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='test-queue'):
+def populate_queue_with_sms_content_msg(mocker,
+                                        delivery_config,
+                                        queue_name='test-queue'):
     boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
@@ -233,13 +304,15 @@ def populate_queue_with_sms_content_msg(mocker, delivery_config, queue_name='tes
 
 
 @pytest.fixture(scope='function')
-def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='test-queue'):
+def populate_queue_with_sms_template_msg(mocker,
+                                         delivery_config,
+                                         sms_template_notification,
+                                         queue_name='test-queue'):
     boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    notification = create_sms_template_notification()
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
+    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_template_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
@@ -255,13 +328,15 @@ def populate_queue_with_sms_template_msg(mocker, delivery_config, queue_name='te
 
 
 @pytest.fixture(scope='function')
-def populate_queue_with_sms_job_msg(mocker, delivery_config, queue_name='test-queue'):
+def populate_queue_with_sms_job_msg(mocker,
+                                    delivery_config,
+                                    sms_job_notification,
+                                    queue_name='test-queue'):
     boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    notification = create_sms_job_notification()
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", notification)
+    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_job_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
@@ -277,13 +352,15 @@ def populate_queue_with_sms_job_msg(mocker, delivery_config, queue_name='test-qu
 
 
 @pytest.fixture(scope='function')
-def populate_queue_with_email_msg(mocker, delivery_config, queue_name='test-queue'):
+def populate_queue_with_email_msg(mocker,
+                                  delivery_config,
+                                  email_notification,
+                                  queue_name='test-queue'):
     boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    notification = create_email_notification()
-    msg = create_message(delivery_config, sqs_resource, queue, "email", notification)
+    msg = create_message(delivery_config, sqs_resource, queue, "email", email_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]

@@ -41,4 +41,4 @@ class TwilioClient(SmsClient):
             return response.sid
         except TwilioRestException as e:
             logger.exception(e)
-            raise SmsClientException(self.identifier)
+            raise SmsClientException(e)
