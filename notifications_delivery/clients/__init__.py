@@ -3,6 +3,7 @@ class ClientException(Exception):
     '''
     Base Exceptions for sending notifications that fail
     '''
+    pass
 
 
 class Client(object):

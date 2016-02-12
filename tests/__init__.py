@@ -33,44 +33,6 @@ def create_queue(sqs_connection, queue_name):
     return queue
 
 
-def create_sms_template_notification(to=None, template=None):
-    if to is None:
-        to = "447700900986"
-    if template is None:
-        template = "1234"
-    return {'to': to, 'template': template}
-
-
-def create_sms_job_notification(to=None, template=None, job=None):
-    if to is None:
-        to = "447700900986"
-    if template is None:
-        template = "1234"
-    if job is None:
-        job = '4567'
-    return {'to': to, 'template': template, 'job': job}
-
-
-def create_sms_content_notification(to=None, content=None):
-    if to is None:
-        to = "447700900986"
-    if content is None:
-        content = "Test content"
-    return {'to': to, 'content': content}
-
-
-def create_email_notification(to=None, body=None, from_=None, subject=None):
-    if to is None:
-        to = "test@digital.cabinet-office.gov.uk"
-    if body is None:
-        body = "<Insert email content here>"
-    if from_ is None:
-        from_ = "notify@digital.cabinet-office.gov.uk"
-    if subject is None:
-        subject = "Email subject"
-    return {'to_address': to, 'from_address': from_, 'body': body, 'subject': subject}
-
-
 def create_msg_str_attr(content):
     return {'StringValue': content}
 

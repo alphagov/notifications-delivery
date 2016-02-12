@@ -26,6 +26,9 @@ class Config(object):
     JOB_POLL_INTERVAL_SECONDS = int(os.getenv('JOB_POLL_INTERVAL_SECONDS', '5'))
     DELIVERY_POLL_INTERVAL_SECONDS = int(os.getenv('DELIVERY_POLL_INTERVAL_SECONDS', '2'))
 
+    TWILIO_ACCOUNT_SID = 'ACCOUNT_ID'
+    TWILIO_AUTH_TOKEN = 'AUTH_TOKEN'
+
 
 class Development(Config):
     DEBUG = True
