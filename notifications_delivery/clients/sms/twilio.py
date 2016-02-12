@@ -41,7 +41,7 @@ class TwilioClient(SmsClient):
             return response.sid
         except TwilioRestException as e:
             logger.exception(e)
-            raise SmsClientException(e)
+            raise TwilioClientException(e)
 
     def status(self, message_id):
         try:
@@ -51,4 +51,4 @@ class TwilioClient(SmsClient):
             return None
         except TwilioRestException as e:
             logger.exception(e)
-            raise SmsClientException(e)
+            raise TwilioClientException(e)
