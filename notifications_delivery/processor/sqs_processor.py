@@ -3,13 +3,12 @@ import logging
 
 import sys
 from itsdangerous import URLSafeSerializer
-from notify_client import NotifyAPIClient
-from notify_client.errors import HTTPError as alphaHTTPError
-from notify_client.errors import InvalidResponse as alphaInvalidResponse
 from notifications_delivery.clients.notify_client.api_client import ApiClient
 from notifications_python_client.errors import (HTTP503Error, HTTPError, InvalidResponse)
 from notifications_delivery.clients.sms.twilio import (
     TwilioClient, TwilioClientException)
+from notifications_delivery.clients.email.aws_ses import (
+    AwsSesClient, AwsSesClientException)
 
 
 class ProcessingError(Exception):
@@ -60,7 +59,7 @@ def _decrypt_message(config, encrypted_content):
     return serializer.loads(encrypted_content, salt=config.get('DANGEROUS_SALT'))
 
 
-def _process_message(config, message, twilio_client, notify_alpha_client, notify_beta_client):
+def _process_message(config, message, twilio_client, aws_ses_client, notify_beta_client):
     content = _decrypt_message(config, message.body)
     type_ = message.message_attributes.get('type').get('StringValue')
     service_id = message.message_attributes.get('service_id').get('StringValue')
@@ -73,18 +72,13 @@ def _process_message(config, message, twilio_client, notify_alpha_client, notify
     try:
         if type_ == 'email':
             try:
-                response = notify_alpha_client.send_email(
-                    content['to_address'],
-                    content['body'],
+                response = aws_ses_client.send_email(
                     content['from_address'],
-                    content['subject'])
+                    content['to_address'],
+                    content['subject'],
+                    content['body'])
                 status = 'sent'
-            except alphaHTTPError as e:
-                if e.status_code == 503:
-                    raise ExternalConnectionError(e)
-                else:
-                    raise ProcessingError(e)
-            except alphaInvalidResponse as e:
+            except AwsSesClientException as e:
                 raise ProcessingError(e)
         elif type_ == 'sms':
             if 'content' in content:
@@ -140,8 +134,7 @@ def process_all_queues(config, queue_name_prefix):
     """
     logger = _set_up_logger(config)
     twilio_client = TwilioClient(config)
-    notify_alpha_client = NotifyAPIClient(base_url=config['NOTIFY_DATA_API_URL'],
-                                          auth_token=config['NOTIFY_DATA_API_AUTH_TOKEN'])
+    aws_ses_client = AwsSesClient()
     notify_beta_client = ApiClient(base_url=config['API_HOST_NAME'],
                                    client_id=config['DELIVERY_CLIENT_USER_NAME'],
                                    secret=config['DELIVERY_CLIENT_SECRET'])
@@ -158,7 +151,7 @@ def process_all_queues(config, queue_name_prefix):
                 logger.info("Processing message {}".format(_get_message_id(message)))
                 to_delete = True
                 try:
-                    _process_message(config, message, twilio_client, notify_alpha_client, notify_beta_client)
+                    _process_message(config, message, twilio_client, aws_ses_client, notify_beta_client)
                 except ProcessingError as e:
                     msg = (
                         "Failed prcessing message from queue {}."

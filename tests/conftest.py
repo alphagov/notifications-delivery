@@ -178,16 +178,6 @@ def mock_alpha_send_sms_http_503(mocker):
 
 
 @pytest.fixture(scope='function')
-def mock_alpha_send_email(mocker):
-
-    def _send_email(to, body, from_, subject):
-        return {'something': 'something'}
-    return mocker.patch(
-        'notifications_delivery.processor.sqs_processor.NotifyAPIClient.send_email',
-        side_effect=_send_email)
-
-
-@pytest.fixture(scope='function')
 def mock_beta_get_template(mocker):
 
     def _get_template(service_id, template_id):
@@ -201,6 +191,15 @@ def mock_beta_get_template(mocker):
     return mocker.patch(
         'notifications_delivery.processor.sqs_processor.ApiClient.get_template',
         side_effect=_get_template)
+
+
+@pytest.fixture(scope='function')
+def mock_ses_send_email(mocker):
+    def _send_email(from_, to_, subject, body):
+        return None
+    return mocker.patch(
+        'notifications_delivery.processor.sqs_processor.AwsSesClient.send_email',
+        side_effect=_send_email)
 
 
 @pytest.fixture(scope='function')
