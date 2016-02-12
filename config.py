@@ -14,7 +14,7 @@ class Config(object):
     NOTIFY_DATA_API_AUTH_TOKEN = os.getenv('NOTIFY_API_TOKEN', "dev-token")
     # Notification Queue names are a combination of a prefx plus a name
     NOTIFICATION_QUEUE_PREFIX = 'notification'
-    NOTIFICATION_ATTRIBUTES = ['type', 'message_id', 'service_id', 'template_id']
+    NOTIFICATION_ATTRIBUTES = ['type', 'notification_id', 'service_id', 'template_id']
 
     AWS_REGION = 'eu-west-1'
 

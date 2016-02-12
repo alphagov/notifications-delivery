@@ -91,9 +91,12 @@ def test_process_sms_job_notification(mocker,
     content = decrypt_content(delivery_config, msg.body)
     service_id = msg.message_attributes.get('service_id').get('StringValue')
     template_id = msg.message_attributes.get('template_id').get('StringValue')
+    notification_id = msg.message_attributes.get('notification_id').get('StringValue')
     mock_beta_get_template.assert_called_with(service_id, template_id)
     template_json = mock_beta_get_template(service_id, template_id)
     mock_alpha_send_sms.assert_called_with(content['to'], template_json['content'])
     mock_beta_create_notification.assert_called_with(
-        service_id, template_id, content['job'], content['to'], 'sent')
+        service_id=service_id, template_id=template_id, job_id=content['job'],
+        to=content['to'], status='sent',
+        notification_id=notification_id)
     assert msg.delete.call_count == 1

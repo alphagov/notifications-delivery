@@ -67,7 +67,7 @@ def delivery_config():
         'API_HOST_NAME': '',
         'DELIVERY_CLIENT_USER_NAME': '',
         'DELIVERY_CLIENT_SECRET': '',
-        'NOTIFICATION_ATTRIBUTES': ['type', 'message_id', 'service_id', 'template_id'],
+        'NOTIFICATION_ATTRIBUTES': ['type', 'notification_id', 'service_id', 'template_id'],
         'SECRET_KEY': 'secret-key',
         'DANGEROUS_SALT': 'dangerous-salt'
     }
@@ -166,9 +166,9 @@ def mock_beta_get_template(mocker):
 
 @pytest.fixture(scope='function')
 def mock_beta_create_notification(mocker):
-    def _create_notification(service_id, template_id, job_id, to, status):
+    def _create_notification(service_id, template_id, job_id, to, status, notification_id):
         return {
-            'id': 123,
+            'id': notification_id,
             'service': service_id,
             'template': template_id,
             'job': job_id,

@@ -17,9 +17,10 @@ class ApiClient(BaseAPIClient):
         notification = {"to": number,  "job": job_id, "template": template_id}
         return self.post(url, data=notification)
 
-    def create_notification(self, service_id, template_id, job_id, to, status):
+    def create_notification(self, service_id, template_id, job_id, to, status, notification_id):
         url = '/service/{0}/job/{1}/notification'.format(service_id, job_id)
         notification = {
+            "id": notification_id,
             "to": to,
             'service': service_id,
             'template': template_id,

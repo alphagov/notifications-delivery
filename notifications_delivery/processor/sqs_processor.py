@@ -1,5 +1,7 @@
 import boto3
 import logging
+
+import sys
 from itsdangerous import URLSafeSerializer
 from notify_client import NotifyAPIClient
 from notify_client.errors import HTTPError as alphaHTTPError
@@ -31,7 +33,10 @@ def _set_up_logger(config):
     if not turn_off:
         logger = logging.getLogger('delivery_notification')
         logger.setLevel(config['DELIVERY_LOG_LEVEL'])
-        fh = logging.FileHandler(config['DELIVERY_LOG_PATH'])
+        if config['NOTIFICATIONS_DELIVERY_ENVIRONMENT'] in ['development', 'test']:
+            fh = logging.StreamHandler(sys.stdout)
+        else:
+            fh = logging.FileHandler(config['DELIVERY_LOG_PATH'])
         fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)
@@ -58,6 +63,7 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
     type_ = message.message_attributes.get('type').get('StringValue')
     service_id = message.message_attributes.get('service_id').get('StringValue')
     template_id = message.message_attributes.get('template_id').get('StringValue')
+    notification_id = message.message_attributes.get('notification_id').get('StringValue')
     job_id = content['job'] if 'job' in content else None
     status = 'failed'
     to = content['to'] if 'to' in content else content['to_address']
@@ -112,17 +118,18 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
                     raise ProcessingError(e)
         else:
             error_msg = "Invalid type {} for message id {}".format(
-                type_, message.message_attributes.get('message_id').get('StringValue'))
+                type_, message.message_attributes.get('notification_id').get('StringValue'))
             raise ProcessingError(error_msg)
     finally:
         if job_id:
             try:
                 notify_beta_client.create_notification(
-                    service_id,
-                    template_id,
-                    job_id,
-                    to,
-                    status)
+                    service_id=service_id,
+                    template_id=template_id,
+                    job_id=job_id,
+                    to=to,
+                    status=status,
+                    notification_id=notification_id)
             except HTTP503Error as e:
                 raise ExternalConnectionError(e)
             except HTTPError as e:

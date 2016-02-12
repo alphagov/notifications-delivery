@@ -94,7 +94,7 @@ def create_message(config,
     setattr(msg, 'body', encrypted_content)
     msg_attrs = {}
     msg_attrs['type'] = create_msg_str_attr(type_)
-    msg_attrs['message_id'] = create_msg_str_attr(msg_id)
+    msg_attrs['notification_id'] = create_msg_str_attr(msg_id)
     msg_attrs['service_id'] = create_msg_str_attr(service_id)
     msg_attrs['template_id'] = create_msg_str_attr(template_id)
     setattr(msg, 'message_attributes', msg_attrs)
