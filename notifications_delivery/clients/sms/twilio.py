@@ -21,7 +21,7 @@ class TwilioClient(SmsClient):
         self.client = TwilioRestClient(
             config.get('TWILIO_ACCOUNT_SID'),
             config.get('TWILIO_AUTH_TOKEN'))
-        self.from_number = config.get('FROM_NUMBER')
+        self.from_number = config.get('TWILIO_NUMBER')
 
     def send_sms(self, notification, content):
         try:
