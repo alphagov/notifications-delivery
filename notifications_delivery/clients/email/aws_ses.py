@@ -1,3 +1,4 @@
+import boto3
 from notifications_delivery.clients.email import (
     EmailClient, EmailClientException)
 
@@ -11,8 +12,8 @@ class AwsSesClient(EmailClient):
     Amazon SES email client.
     '''
 
-    def __init__(self, client, *args, **kwargs):
-        self._client = client
+    def __init__(self, *args, **kwargs):
+        self._client = boto3.client('ses')
         super(AwsSesClient, self).__init__(*args, **kwargs)
 
     def send_email(self,
