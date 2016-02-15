@@ -168,26 +168,6 @@ def mock_post_notifications(mocker):
 
 
 @pytest.fixture(scope='function')
-def mock_alpha_send_sms(mocker):
-
-    def _send_sms(to, content):
-        return {'something': 'something'}
-    return mocker.patch(
-        'notifications_delivery.processor.sqs_processor.NotifyAPIClient.send_sms',
-        side_effect=_send_sms)
-
-
-@pytest.fixture(scope='function')
-def mock_alpha_send_sms_processing_error(mocker):
-
-    def _send_sms(to, content):
-        raise ProcessingError("processing error")
-    return mocker.patch(
-        'notifications_delivery.processor.sqs_processor.NotifyAPIClient.send_sms',
-        side_effect=_send_sms)
-
-
-@pytest.fixture(scope='function')
 def mock_alpha_send_sms_http_503(mocker):
 
     def _send_sms(to, content):
@@ -243,9 +223,11 @@ def mock_beta_create_notification(mocker):
 def mock_twilio_create(mocker):
     def _create(body=None, to=None, from_=None):
         return Mock(sid="123")
-    create_mock = Mock('create', side_effect=_create)
-    msgs_mock = Mock(messages=create_mock())
-    cls_mock = patch('twilio.rest.TwilioRestClient', messages=msgs_mock)
+    create_mock = Mock(**{'create.side_effect': _create})
+    msgs_mock = Mock(messages=create_mock)
+    cls_mock = patch(
+        'notifications_delivery.clients.sms.twilio.TwilioRestClient',
+        messages=msgs_mock)
     return cls_mock
 
 

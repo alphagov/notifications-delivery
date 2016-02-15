@@ -8,6 +8,8 @@ from notify_client.errors import HTTPError as alphaHTTPError
 from notify_client.errors import InvalidResponse as alphaInvalidResponse
 from notifications_delivery.clients.notify_client.api_client import ApiClient
 from notifications_python_client.errors import (HTTP503Error, HTTPError, InvalidResponse)
+from notifications_delivery.clients.sms.twilio import (
+    TwilioClient, TwilioClientException)
 
 
 class ProcessingError(Exception):
@@ -58,7 +60,7 @@ def _decrypt_message(config, encrypted_content):
     return serializer.loads(encrypted_content, salt=config.get('DANGEROUS_SALT'))
 
 
-def _process_message(config, message, notify_alpha_client, notify_beta_client):
+def _process_message(config, message, twilio_client, notify_alpha_client, notify_beta_client):
     content = _decrypt_message(config, message.body)
     type_ = message.message_attributes.get('type').get('StringValue')
     service_id = message.message_attributes.get('service_id').get('StringValue')
@@ -87,15 +89,9 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
         elif type_ == 'sms':
             if 'content' in content:
                 try:
-                    response = notify_alpha_client.send_sms(
-                        content['to'], content['content'])
+                    response = twilio_client.send_sms(content, content['content'])
                     status = 'sent'
-                except alphaHTTPError as e:
-                    if e.status_code == 503:
-                        raise ExternalConnectionError(e)
-                    else:
-                        raise ProcessingError(e)
-                except alphaInvalidResponse as e:
+                except TwilioClientException as e:
                     raise ProcessingError(e)
             elif 'template' in content:
                 try:
@@ -107,14 +103,9 @@ def _process_message(config, message, notify_alpha_client, notify_beta_client):
                 except InvalidResponse as e:
                     raise InvalidResponse(e)
                 try:
-                    response = notify_alpha_client.send_sms(content['to'], template_response['content'])
+                    response = twilio_client.send_sms(content, template_response['content'])
                     status = 'sent'
-                except alphaHTTPError as e:
-                    if e.status_code == 503:
-                        raise ExternalConnectionError(e)
-                    else:
-                        raise ProcessingError(e)
-                except alphaInvalidResponse as e:
+                except TwilioClientException as e:
                     raise ProcessingError(e)
         else:
             error_msg = "Invalid type {} for message id {}".format(
@@ -148,6 +139,7 @@ def process_all_queues(config, queue_name_prefix):
     For each queue on the aws account process one message.
     """
     logger = _set_up_logger(config)
+    twilio_client = TwilioClient(config)
     notify_alpha_client = NotifyAPIClient(base_url=config['NOTIFY_DATA_API_URL'],
                                           auth_token=config['NOTIFY_DATA_API_AUTH_TOKEN'])
     notify_beta_client = ApiClient(base_url=config['API_HOST_NAME'],
@@ -166,7 +158,7 @@ def process_all_queues(config, queue_name_prefix):
                 logger.info("Processing message {}".format(_get_message_id(message)))
                 to_delete = True
                 try:
-                    _process_message(config, message, notify_alpha_client, notify_beta_client)
+                    _process_message(config, message, twilio_client, notify_alpha_client, notify_beta_client)
                 except ProcessingError as e:
                     msg = (
                         "Failed prcessing message from queue {}."
