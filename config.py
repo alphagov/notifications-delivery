@@ -5,9 +5,6 @@ class Config(object):
     SECRET_KEY = os.environ['SECRET_KEY']
     DANGEROUS_SALT = os.environ['DANGEROUS_SALT']
     NOTIFY_LOG_LEVEL = os.environ['NOTIFY_LOG_LEVEL']
-    NOTIFY_APP_NAME = os.environ['NOTIFY_APP_NAME']
-    NOTIFY_LOG_PATH = os.environ['NOTIFY_LOG_PATH']
-    DELIVERY_LOG_PATH = os.environ['DELIVERY_LOG_PATH']
     DELIVERY_LOG_LEVEL = os.environ['DELIVERY_LOG_LEVEL']
     API_HOST_NAME = os.environ['API_HOST_NAME']
     DELIVERY_CLIENT_USER_NAME = os.environ['DELIVERY_CLIENT_USER_NAME']
@@ -21,10 +18,15 @@ class Config(object):
     PROCESSOR_MAX_NUMBER_OF_MESSAGES = int(os.environ['PROCESSOR_MAX_NUMBER_OF_MESSAGES'])
     PROCESSOR_VISIBILITY_TIMEOUT = int(os.environ['PROCESSOR_VISIBILITY_TIMEOUT'])
     NOTIFICATION_QUEUE_PREFIX = os.environ['NOTIFICATION_QUEUE_PREFIX']
-    NOTIFICATION_ATTRIBUTES = ['type', 'message_id', 'service_id', 'template_id']
     TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
     TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
     TWILIO_NUMBER = os.environ['TWILIO_NUMBER']
+
+    # the following do not change per environment so can be set here
+    NOTIFY_APP_NAME = 'delivery'
+    NOTIFY_LOG_PATH = '/var/log/notify/application.log'
+    DELIVERY_LOG_PATH = '/var/log/notify/delivery.log'
+    NOTIFICATION_ATTRIBUTES = ['type', 'message_id', 'service_id', 'template_id']
 
 
 class Development(Config):
