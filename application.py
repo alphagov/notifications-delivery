@@ -9,7 +9,7 @@ from flask.ext.script import Manager, Server
 from notifications_delivery.app import create_app
 from notifications_delivery.processor.sqs_processor import process_all_queues
 
-application = create_app(os.getenv('NOTIFY_DELIVERY_ENVIRONMENT') or 'development')
+application = create_app()
 manager = Manager(application)
 port = int(os.environ.get('PORT', 6013))
 manager.add_command("runserver", Server(host='0.0.0.0', port=port))

@@ -34,7 +34,7 @@ def _set_up_logger(config):
     if not turn_off:
         logger = logging.getLogger('delivery_notification')
         logger.setLevel(config['DELIVERY_LOG_LEVEL'])
-        if config['NOTIFICATIONS_DELIVERY_ENVIRONMENT'] in ['development', 'test']:
+        if config['DEBUG']:
             fh = logging.StreamHandler(sys.stdout)
         else:
             fh = logging.FileHandler(config['DELIVERY_LOG_PATH'])
@@ -144,7 +144,7 @@ def process_all_queues(config, queue_name_prefix):
         try:
             logger.info("Pulling from queue {}".format(queue.url))
             messages = queue.receive_messages(
-                MaxNumberOfMessages=config['PROCESSOR_MAX_NUMBER_OF_MESSGAES'],
+                MaxNumberOfMessages=config['PROCESSOR_MAX_NUMBER_OF_MESSAGES'],
                 VisibilityTimeout=config['PROCESSOR_VISIBILITY_TIMEOUT'],
                 MessageAttributeNames=config['NOTIFICATION_ATTRIBUTES'])
             for message in messages:

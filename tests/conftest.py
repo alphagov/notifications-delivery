@@ -17,7 +17,7 @@ from notifications_delivery.app import create_app
 
 @pytest.fixture(scope='session')
 def app_(request):
-    app = create_app('test')
+    app = create_app()
 
     ctx = app.app_context()
     ctx.push()
@@ -49,29 +49,6 @@ def sqs_client(region_name='eu-west-1'):
 @pytest.fixture(scope='function')
 def sqs_resource():
     return boto.connect_sqs('the_key', 'the_secret')
-
-
-@pytest.fixture(scope='function')
-def delivery_config():
-    return {
-        'TURN_OFF_LOGGING': True,
-        'DELIVERY_LOG_PATH': '',
-        'DELIVERY_LOG_LEVEL': 'DEBUG',
-        'PROCESSOR_MAX_NUMBER_OF_MESSGAES': 1,
-        'PROCESSOR_VISIBILITY_TIMEOUT': 60,
-        'AWS_REGION': 'eu-west-1',
-        'NOTIFICATION_QUEUE_PREFIX': 'notification',
-        'NOTIFY_DATA_API_URL': '',
-        'NOTIFY_DATA_API_AUTH_TOKEN': '',
-        'API_HOST_NAME': '',
-        'DELIVERY_CLIENT_USER_NAME': '',
-        'DELIVERY_CLIENT_SECRET': '',
-        'NOTIFICATION_ATTRIBUTES': ['type', 'notification_id', 'service_id', 'template_id'],
-        'SECRET_KEY': 'secret-key',
-        'DANGEROUS_SALT': 'dangerous-salt',
-        'TWILIO_ACCOUNT_SID': 'ACCOUNT_ID',
-        'TWILIO_AUTH_TOKEN': 'AUTH_TOKEN'
-    }
 
 
 @pytest.fixture(scope='function')
@@ -269,8 +246,8 @@ def mock_twilio_get_exception(mocker):
 
 
 @pytest.fixture(scope='function')
-def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
-    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+def create_queue_no_msgs(mocker, app_, queue_name='test-queue'):
+    boto3.setup_default_session(region_name=app_.config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
     queue = create_queue(sqs_connection, queue_name)
 
@@ -289,14 +266,14 @@ def create_queue_no_msgs(mocker, delivery_config, queue_name='test-queue'):
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_content_msg(mocker,
-                                        delivery_config,
+                                        app_,
                                         sms_content_notification,
                                         queue_name='test-queue'):
-    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+    boto3.setup_default_session(region_name=app_.config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
+    sqs_resource = create_sqs_resource(app_.config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_content_notification)
+    msg = create_message(app_.config, sqs_resource, queue, "sms", sms_content_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
@@ -313,14 +290,14 @@ def populate_queue_with_sms_content_msg(mocker,
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_template_msg(mocker,
-                                         delivery_config,
+                                         app_,
                                          sms_template_notification,
                                          queue_name='test-queue'):
-    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+    boto3.setup_default_session(region_name=app_.config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
+    sqs_resource = create_sqs_resource(app_.config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_template_notification)
+    msg = create_message(app_.config, sqs_resource, queue, "sms", sms_template_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
@@ -337,14 +314,14 @@ def populate_queue_with_sms_template_msg(mocker,
 
 @pytest.fixture(scope='function')
 def populate_queue_with_sms_job_msg(mocker,
-                                    delivery_config,
+                                    app_,
                                     sms_job_notification,
                                     queue_name='test-queue'):
-    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+    boto3.setup_default_session(region_name=app_.config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
+    sqs_resource = create_sqs_resource(app_.config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    msg = create_message(delivery_config, sqs_resource, queue, "sms", sms_job_notification)
+    msg = create_message(app_.config, sqs_resource, queue, "sms", sms_job_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
@@ -361,14 +338,14 @@ def populate_queue_with_sms_job_msg(mocker,
 
 @pytest.fixture(scope='function')
 def populate_queue_with_email_msg(mocker,
-                                  delivery_config,
+                                  app_,
                                   email_notification,
                                   queue_name='test-queue'):
-    boto3.setup_default_session(region_name=delivery_config['AWS_REGION'])
+    boto3.setup_default_session(region_name=app_.config['AWS_REGION'])
     sqs_connection = create_sqs_connection()
-    sqs_resource = create_sqs_resource(delivery_config['AWS_REGION'])
+    sqs_resource = create_sqs_resource(app_.config['AWS_REGION'])
     queue = create_queue(sqs_connection, queue_name)
-    msg = create_message(delivery_config, sqs_resource, queue, "email", email_notification)
+    msg = create_message(app_.config, sqs_resource, queue, "email", email_notification)
 
     def _receive(MaxNumberOfMessages=1, VisibilityTimeout=60, MessageAttributeNames=[]):
         return [msg]
