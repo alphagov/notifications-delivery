@@ -12,8 +12,8 @@ class AwsSesClient(EmailClient):
     Amazon SES email client.
     '''
 
-    def __init__(self, *args, **kwargs):
-        self._client = boto3.client('ses')
+    def __init__(self, region, *args, **kwargs):
+        self._client = boto3.client('ses', region_name=region)
         super(AwsSesClient, self).__init__(*args, **kwargs)
 
     def send_email(self,

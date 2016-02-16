@@ -134,7 +134,7 @@ def process_all_queues(config, queue_name_prefix):
     """
     logger = _set_up_logger(config)
     twilio_client = TwilioClient(config)
-    aws_ses_client = AwsSesClient()
+    aws_ses_client = AwsSesClient(region=config['AWS_REGION'])
     notify_beta_client = ApiClient(base_url=config['API_HOST_NAME'],
                                    client_id=config['DELIVERY_CLIENT_USER_NAME'],
                                    secret=config['DELIVERY_CLIENT_SECRET'])
@@ -142,7 +142,7 @@ def process_all_queues(config, queue_name_prefix):
     logger.debug("Pulling off {} queues.".format(len(queues)))
     for queue in queues:
         try:
-            logger.info("Pulling from queue {}".format(queue.url))
+            logger.debug("Pulling from queue {}".format(queue.url))
             messages = queue.receive_messages(
                 MaxNumberOfMessages=config['PROCESSOR_MAX_NUMBER_OF_MESSAGES'],
                 VisibilityTimeout=config['PROCESSOR_VISIBILITY_TIMEOUT'],

@@ -31,9 +31,8 @@ class TwilioClient(SmsClient):
                 from_=self.from_number
             )
             msg = (
-                "SMS notification (id={}, to={}, body={}) has been queued to"
+                "SMS notification (to={}, body={}) has been queued to"
                 " be sent with request id of {}.").format(
-                    notification['id'],
                     notification['to'],
                     content,
                     response.sid)
