@@ -139,10 +139,8 @@ def process_all_queues(config, queue_name_prefix):
                                    client_id=config['DELIVERY_CLIENT_USER_NAME'],
                                    secret=config['DELIVERY_CLIENT_SECRET'])
     queues = _get_all_queues(config, queue_name_prefix)
-    logger.debug("Pulling off {} queues.".format(len(queues)))
     for queue in queues:
         try:
-            logger.debug("Pulling from queue {}".format(queue.url))
             messages = queue.receive_messages(
                 MaxNumberOfMessages=config['PROCESSOR_MAX_NUMBER_OF_MESSAGES'],
                 VisibilityTimeout=config['PROCESSOR_VISIBILITY_TIMEOUT'],

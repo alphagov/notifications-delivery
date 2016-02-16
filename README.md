@@ -25,22 +25,21 @@ export SECRET_KEY='dev-notify-secret-key'
 export DANGEROUS_SALT='dev-notify-salt'
 export NOTIFY_LOG_LEVEL='DEBUG'
 export NOTIFY_APP_NAME='delivery'
-export NOTIFY_LOG_PATH='/var/log/notify/application.log'
-export DELIVERY_LOG_PATH='/var/log/notify/delivery.log'
 export DELIVERY_LOG_LEVEL='DEBUG'
 export PROCESSOR_MAX_NUMBER_OF_MESSAGES=1
 export PROCESSOR_VISIBILITY_TIMEOUT=5
-export NOTIFICATION_QUEUE_PREFIX='development'
+export NOTIFICATION_QUEUE_PREFIX='[unique-to-environment]-development'
 export AWS_REGION='eu-west-1'
-export NOTIFY_JOB_QUEUE='notify-job-queue'
+export NOTIFY_JOB_QUEUE='[unique-to-environment]-notify-job-queue'
 export API_HOST_NAME='http://localhost:6011'
 export DELIVERY_CLIENT_USER_NAME='dev-notify-delivery'
 export DELIVERY_CLIENT_SECRET='dev-notify-secret-key'
 export JOB_POLL_INTERVAL_SECONDS=5
 export DELIVERY_POLL_INTERVAL_SECONDS=1
-export NOTIFY_DATA_API_URL='http://localhost:6011'
-export NOTIFY_DATA_API_AUTH_TOKEN='dev-token'
+
 ```
+
+SECRET_KEY and DANGEROUS_SALT and DELIVERY_CLIENT_USER_NAME and DELIVERY_CLIENT_SECRET must match values in notifications-api config.
 
 If you add a new item to config.py add that to your local environment file and get it added
 to the environment on the deployment target. The environment.sh is ingored in version control as there may be
