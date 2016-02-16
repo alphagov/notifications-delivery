@@ -4,7 +4,7 @@ from notifications_delivery.clients.email.aws_ses import (AwsSesClient, AwsSesCl
 
 @mock_ses
 def test_send_email(ses_client):
-    aws_ses_client = AwsSesClient()
+    aws_ses_client = AwsSesClient(region='eu-west-1')
     source = "source@notify.gov.uk"
     to_address = "random@random.com"
     subject = "Email subject"
@@ -18,7 +18,7 @@ def test_send_email(ses_client):
 
 @mock_ses
 def test_send_email_not_verified(ses_client):
-    aws_ses_client = AwsSesClient()
+    aws_ses_client = AwsSesClient(region='eu-west-1')
     source = "source@notify.gov.uk"
     to_address = "random@random.com"
     subject = "Email subject"

@@ -18,6 +18,7 @@ class Config(object):
     PROCESSOR_MAX_NUMBER_OF_MESSAGES = int(os.environ['PROCESSOR_MAX_NUMBER_OF_MESSAGES'])
     PROCESSOR_VISIBILITY_TIMEOUT = int(os.environ['PROCESSOR_VISIBILITY_TIMEOUT'])
     NOTIFICATION_QUEUE_PREFIX = os.environ['NOTIFICATION_QUEUE_PREFIX']
+    NOTIFICATION_ATTRIBUTES = ['type', 'notification_id', 'service_id', 'template_id']
     TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
     TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
     TWILIO_NUMBER = os.environ['TWILIO_NUMBER']
