@@ -2,6 +2,7 @@ import os
 
 
 class Config(object):
+    DEBUG = False
     SECRET_KEY = os.environ['SECRET_KEY']
     DANGEROUS_SALT = os.environ['DANGEROUS_SALT']
     NOTIFY_LOG_LEVEL = os.environ['NOTIFY_LOG_LEVEL']
